@@ -8,6 +8,14 @@ LABEL description="Hadoop Ecosystem Base Image"
 # 避免交互式安装提示
 ENV DEBIAN_FRONTEND=noninteractive
 
+# ============================================
+# 软件版本配置（集中管理，方便修改）
+# ============================================
+ENV JDK_VERSION=8u392b08
+ENV HADOOP_VERSION=3.3.6
+ENV ZOOKEEPER_VERSION=3.8.4
+ENV HBASE_VERSION=2.5.7
+
 # 设置环境变量
 ENV JAVA_HOME=/usr/local/jdk8u392-b08
 ENV HADOOP_HOME=/usr/local/hadoop
@@ -16,77 +24,114 @@ ENV HBASE_HOME=/usr/local/hbase
 ENV HIVE_HOME=/usr/local/hive
 ENV PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$ZOOKEEPER_HOME/bin:$HBASE_HOME/bin:$HIVE_HOME/bin
 
-# 配置阿里云镜像源
+# ============================================
+# 第一阶段：配置镜像源并安装基础工具
+# ============================================
 RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
     sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
-    apt-get update
-
-# 安装基础工具
-RUN apt-get install -y \
-    openssh-server \
-    openssh-client \
-    vim \
-    net-tools \
-    wget \
-    curl \
-    netcat \
+    apt-get update && \
+    apt-get install -y \
+        openssh-server \
+        openssh-client \
+        vim \
+        net-tools \
+        wget \
+        curl \
+        netcat \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 配置SSH
+# ============================================
+# 第二阶段：配置SSH
+# ============================================
 RUN mkdir -p /var/run/sshd && \
     echo 'root:hadoop' | chpasswd && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config && \
-    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
-
-# 生成SSH密钥并配置免密登录
-RUN ssh-keygen -t rsa -P '' -f /root/.ssh/id_rsa && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+    ssh-keygen -t rsa -P '' -f /root/.ssh/id_rsa && \
     cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys && \
     chmod 600 /root/.ssh/authorized_keys && \
     echo "StrictHostKeyChecking no" >> /root/.ssh/config && \
     echo "UserKnownHostsFile /dev/null" >> /root/.ssh/config
 
-# 创建软件目录
-RUN mkdir -p /usr/local/src /data/hadoop/tmp /data/hadoop/name /data/hadoop/data \
-    /data/zookeeper/data /data/zookeeper/logs /data/hbase
+# ============================================
+# 第三阶段：创建目录
+# ============================================
+RUN mkdir -p /usr/local/src \
+    /data/hadoop/tmp /data/hadoop/name /data/hadoop/data \
+    /data/zookeeper/data /data/zookeeper/logs \
+    /data/hbase
 
-# 复制安装包（需要提前下载到 packages 目录）
-# 使用新版本：Adoptium OpenJDK 8, ZooKeeper 3.8.4, HBase 2.5.7
-COPY packages/OpenJDK8U-jdk_x64_linux_hotspot_8u392b08.tar.gz /usr/local/src/
-COPY packages/hadoop-3.3.6.tar.gz /usr/local/src/
-COPY packages/apache-zookeeper-3.8.4-bin.tar.gz /usr/local/src/
-COPY packages/hbase-2.5.7-bin.tar.gz /usr/local/src/
-
-# 解压并安装
+# ============================================
+# 第四阶段：下载并安装 JDK (Adoptium OpenJDK 8)
+# ============================================
 RUN cd /usr/local/src && \
-    # JDK (Adoptium OpenJDK 8)
-    tar -zxf OpenJDK8U-jdk_x64_linux_hotspot_8u392b08.tar.gz -C /usr/local/ && \
-    # Hadoop
-    tar -zxf hadoop-3.3.6.tar.gz -C /usr/local/ && \
-    mv /usr/local/hadoop-3.3.6 /usr/local/hadoop && \
-    # ZooKeeper
-    tar -zxf apache-zookeeper-3.8.4-bin.tar.gz -C /usr/local/ && \
-    mv /usr/local/apache-zookeeper-3.8.4-bin /usr/local/zookeeper && \
-    # HBase
-    tar -zxf hbase-2.5.7-bin.tar.gz -C /usr/local/ && \
-    mv /usr/local/hbase-2.5.7 /usr/local/hbase && \
-    # 清理
-    rm -rf /usr/local/src/*
+    echo ">>> Downloading JDK 8..." && \
+    wget -q --show-progress \
+        "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/8/jdk/x64/linux/OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION}.tar.gz" \
+        -O jdk.tar.gz && \
+    tar -zxf jdk.tar.gz -C /usr/local/ && \
+    rm jdk.tar.gz && \
+    echo ">>> JDK installed"
 
-# 配置环境变量
+# ============================================
+# 第五阶段：下载并安装 Hadoop
+# ============================================
+RUN cd /usr/local/src && \
+    echo ">>> Downloading Hadoop ${HADOOP_VERSION}..." && \
+    wget -q --show-progress \
+        "https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz" \
+        -O hadoop.tar.gz && \
+    tar -zxf hadoop.tar.gz -C /usr/local/ && \
+    mv /usr/local/hadoop-${HADOOP_VERSION} /usr/local/hadoop && \
+    rm hadoop.tar.gz && \
+    echo ">>> Hadoop installed"
+
+# ============================================
+# 第六阶段：下载并安装 ZooKeeper
+# ============================================
+RUN cd /usr/local/src && \
+    echo ">>> Downloading ZooKeeper ${ZOOKEEPER_VERSION}..." && \
+    wget -q --show-progress \
+        "https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/apache-zookeeper-${ZOOKEEPER_VERSION}-bin.tar.gz" \
+        -O zookeeper.tar.gz && \
+    tar -zxf zookeeper.tar.gz -C /usr/local/ && \
+    mv /usr/local/apache-zookeeper-${ZOOKEEPER_VERSION}-bin /usr/local/zookeeper && \
+    rm zookeeper.tar.gz && \
+    echo ">>> ZooKeeper installed"
+
+# ============================================
+# 第七阶段：下载并安装 HBase
+# ============================================
+RUN cd /usr/local/src && \
+    echo ">>> Downloading HBase ${HBASE_VERSION}..." && \
+    wget -q --show-progress \
+        "https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/${HBASE_VERSION}/hbase-${HBASE_VERSION}-bin.tar.gz" \
+        -O hbase.tar.gz && \
+    tar -zxf hbase.tar.gz -C /usr/local/ && \
+    mv /usr/local/hbase-${HBASE_VERSION} /usr/local/hbase && \
+    rm hbase.tar.gz && \
+    echo ">>> HBase installed"
+
+# ============================================
+# 第八阶段：配置环境变量
+# ============================================
 RUN echo "export JAVA_HOME=$JAVA_HOME" >> /etc/profile && \
     echo 'export HADOOP_HOME=/usr/local/hadoop' >> /etc/profile && \
     echo 'export ZOOKEEPER_HOME=/usr/local/zookeeper' >> /etc/profile && \
     echo 'export HBASE_HOME=/usr/local/hbase' >> /etc/profile && \
     echo 'export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$ZOOKEEPER_HOME/bin:$HBASE_HOME/bin' >> /etc/profile && \
+    # 同样配置到 bashrc
     echo "export JAVA_HOME=$JAVA_HOME" >> ~/.bashrc && \
     echo 'export HADOOP_HOME=/usr/local/hadoop' >> ~/.bashrc && \
     echo 'export ZOOKEEPER_HOME=/usr/local/zookeeper' >> ~/.bashrc && \
     echo 'export HBASE_HOME=/usr/local/hbase' >> ~/.bashrc && \
     echo 'export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$ZOOKEEPER_HOME/bin:$HBASE_HOME/bin' >> ~/.bashrc
 
-# 配置Hadoop环境
+# ============================================
+# 第九阶段：配置Hadoop
+# ============================================
 RUN echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
     echo "export HDFS_NAMENODE_USER=root" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
     echo "export HDFS_DATANODE_USER=root" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
@@ -94,11 +139,15 @@ RUN echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh 
     echo "export YARN_RESOURCEMANAGER_USER=root" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
     echo "export YARN_NODEMANAGER_USER=root" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 
-# 配置HBase环境
+# ============================================
+# 第十阶段：配置HBase
+# ============================================
 RUN echo "export JAVA_HOME=$JAVA_HOME" >> $HBASE_HOME/conf/hbase-env.sh && \
     echo "export HBASE_MANAGES_ZK=false" >> $HBASE_HOME/conf/hbase-env.sh
 
+# ============================================
 # 暴露端口
+# ============================================
 # SSH: 22
 # HDFS: 9870(NameNode UI), 9000(HDFS), 9864(DataNode)
 # YARN: 8088(ResourceManager UI), 8042(NodeManager)

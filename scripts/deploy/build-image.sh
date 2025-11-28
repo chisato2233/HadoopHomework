@@ -9,7 +9,6 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 DOCKER_DIR="$PROJECT_DIR/docker/base"
-PACKAGES_DIR="$DOCKER_DIR/packages"
 
 # 颜色输出
 RED='\033[0;31m'
@@ -23,126 +22,28 @@ log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 log_step() { echo -e "${CYAN}[STEP]${NC} $1"; }
 
-# ============================================
-# 软件包下载链接配置
-# 每个包提供多个备选下载源
-# ============================================
-
-# JDK 8 - 使用Adoptium (Eclipse Temurin) OpenJDK
-JDK_FILE="OpenJDK8U-jdk_x64_linux_hotspot_8u392b08.tar.gz"
-JDK_URLS=(
-    "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/8/jdk/x64/linux/OpenJDK8U-jdk_x64_linux_hotspot_8u392b08.tar.gz"
-    "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u392-b08/OpenJDK8U-jdk_x64_linux_hotspot_8u392b08.tar.gz"
-)
-
-# Hadoop 3.3.6
-HADOOP_FILE="hadoop-3.3.6.tar.gz"
-HADOOP_URLS=(
-    "https://mirrors.tuna.tsinghua.edu.cn/apache/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz"
-    "https://mirrors.aliyun.com/apache/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz"
-    "https://archive.apache.org/dist/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz"
-)
-
-# ZooKeeper 3.8.4 (3.6.x已停止维护，使用3.8.x)
-ZOOKEEPER_FILE="apache-zookeeper-3.8.4-bin.tar.gz"
-ZOOKEEPER_URLS=(
-    "https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.8.4/apache-zookeeper-3.8.4-bin.tar.gz"
-    "https://mirrors.aliyun.com/apache/zookeeper/zookeeper-3.8.4/apache-zookeeper-3.8.4-bin.tar.gz"
-    "https://archive.apache.org/dist/zookeeper/zookeeper-3.8.4/apache-zookeeper-3.8.4-bin.tar.gz"
-)
-
-# HBase 2.5.7 (2.4.x已停止维护，使用2.5.x)
-HBASE_FILE="hbase-2.5.7-bin.tar.gz"
-HBASE_URLS=(
-    "https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/2.5.7/hbase-2.5.7-bin.tar.gz"
-    "https://mirrors.aliyun.com/apache/hbase/2.5.7/hbase-2.5.7-bin.tar.gz"
-    "https://archive.apache.org/dist/hbase/2.5.7/hbase-2.5.7-bin.tar.gz"
-)
-
-# 尝试从多个源下载
-download_with_fallback() {
-    local filename=$1
-    shift
-    local urls=("$@")
-    
-    for url in "${urls[@]}"; do
-        log_info "尝试下载: $url"
-        if wget --timeout=30 --tries=2 -O "$PACKAGES_DIR/$filename" "$url" 2>/dev/null; then
-            # 检查文件是否有效（大于1MB）
-            local size=$(stat -f%z "$PACKAGES_DIR/$filename" 2>/dev/null || stat -c%s "$PACKAGES_DIR/$filename" 2>/dev/null)
-            if [ "$size" -gt 1000000 ]; then
-                log_info "✓ $filename 下载成功 ($(numfmt --to=iec $size 2>/dev/null || echo "${size} bytes"))"
-                return 0
-            fi
-        fi
-        log_warn "× 下载失败，尝试下一个源..."
-    done
-    
-    log_error "× $filename 所有下载源均失败"
-    return 1
-}
-
-# 检查并下载软件包
-download_packages() {
-    log_step "检查并下载软件包..."
-    
-    mkdir -p "$PACKAGES_DIR"
-    
-    local failed=0
-    
-    # JDK
-    if [ -f "$PACKAGES_DIR/$JDK_FILE" ]; then
-        log_info "✓ $JDK_FILE 已存在"
-    else
-        download_with_fallback "$JDK_FILE" "${JDK_URLS[@]}" || ((failed++))
-    fi
-    
-    # Hadoop
-    if [ -f "$PACKAGES_DIR/$HADOOP_FILE" ]; then
-        log_info "✓ $HADOOP_FILE 已存在"
-    else
-        download_with_fallback "$HADOOP_FILE" "${HADOOP_URLS[@]}" || ((failed++))
-    fi
-    
-    # ZooKeeper
-    if [ -f "$PACKAGES_DIR/$ZOOKEEPER_FILE" ]; then
-        log_info "✓ $ZOOKEEPER_FILE 已存在"
-    else
-        download_with_fallback "$ZOOKEEPER_FILE" "${ZOOKEEPER_URLS[@]}" || ((failed++))
-    fi
-    
-    # HBase
-    if [ -f "$PACKAGES_DIR/$HBASE_FILE" ]; then
-        log_info "✓ $HBASE_FILE 已存在"
-    else
-        download_with_fallback "$HBASE_FILE" "${HBASE_URLS[@]}" || ((failed++))
-    fi
-    
-    if [ $failed -gt 0 ]; then
-        log_error "有 $failed 个软件包下载失败"
-        log_info ""
-        log_info "请手动下载以下文件到: $PACKAGES_DIR/"
-        log_info "----------------------------------------"
-        [ ! -f "$PACKAGES_DIR/$JDK_FILE" ] && log_info "JDK: ${JDK_URLS[0]}"
-        [ ! -f "$PACKAGES_DIR/$HADOOP_FILE" ] && log_info "Hadoop: ${HADOOP_URLS[0]}"
-        [ ! -f "$PACKAGES_DIR/$ZOOKEEPER_FILE" ] && log_info "ZooKeeper: ${ZOOKEEPER_URLS[0]}"
-        [ ! -f "$PACKAGES_DIR/$HBASE_FILE" ] && log_info "HBase: ${HBASE_URLS[0]}"
-        exit 1
-    fi
-    
-    log_info "所有软件包准备完成"
-}
-
 # 构建镜像
 build_image() {
     log_step "开始构建Docker镜像..."
+    log_info "镜像将自动从清华镜像站下载以下组件:"
+    echo "  - JDK 8 (Adoptium OpenJDK)"
+    echo "  - Hadoop 3.3.6"
+    echo "  - ZooKeeper 3.8.4"
+    echo "  - HBase 2.5.7"
+    echo ""
+    log_warn "首次构建需要下载约2GB文件，请确保网络畅通"
+    echo ""
     
     cd "$DOCKER_DIR"
     
-    docker build -t hadoop-ecosystem:latest .
+    # 构建镜像，显示详细输出
+    docker build --progress=plain -t hadoop-ecosystem:latest .
     
     if [ $? -eq 0 ]; then
-        log_info "镜像构建成功: hadoop-ecosystem:latest"
+        log_info "============================================"
+        log_info "  镜像构建成功: hadoop-ecosystem:latest"
+        log_info "============================================"
+        docker images | grep hadoop-ecosystem
     else
         log_error "镜像构建失败"
         exit 1
@@ -158,35 +59,26 @@ save_image() {
     docker save hadoop-ecosystem:latest -o "$OUTPUT_FILE"
     
     # 压缩
+    log_info "压缩镜像文件..."
     gzip -f "$OUTPUT_FILE"
     
     log_info "镜像已保存到: ${OUTPUT_FILE}.gz"
     log_info "文件大小: $(du -h ${OUTPUT_FILE}.gz | cut -f1)"
 }
 
-# 显示手动下载信息
-show_download_info() {
+# 显示帮助
+show_help() {
+    echo "用法: $0 [选项]"
     echo ""
-    echo -e "${CYAN}============================================${NC}"
-    echo -e "${CYAN}  软件包手动下载地址${NC}"
-    echo -e "${CYAN}============================================${NC}"
+    echo "选项:"
+    echo "  -h, --help     显示帮助信息"
+    echo "  -s, --save     构建后自动保存为tar.gz文件"
+    echo "  --no-cache     不使用缓存重新构建"
     echo ""
-    echo "如果自动下载失败，请手动下载以下文件:"
-    echo ""
-    echo "1. JDK 8 (Adoptium OpenJDK):"
-    echo "   ${JDK_URLS[0]}"
-    echo ""
-    echo "2. Hadoop 3.3.6:"
-    echo "   ${HADOOP_URLS[0]}"
-    echo ""
-    echo "3. ZooKeeper 3.8.4:"
-    echo "   ${ZOOKEEPER_URLS[0]}"
-    echo ""
-    echo "4. HBase 2.5.7:"
-    echo "   ${HBASE_URLS[0]}"
-    echo ""
-    echo "下载后放入: $PACKAGES_DIR/"
-    echo -e "${CYAN}============================================${NC}"
+    echo "示例:"
+    echo "  $0              # 构建镜像"
+    echo "  $0 -s           # 构建并保存为tar文件"
+    echo "  $0 --no-cache   # 清除缓存重新构建"
 }
 
 # 主函数
@@ -195,30 +87,69 @@ main() {
     log_info "  Hadoop生态Docker镜像构建脚本"
     log_info "============================================"
     
+    # 解析参数
+    AUTO_SAVE=false
+    NO_CACHE=""
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            -s|--save)
+                AUTO_SAVE=true
+                shift
+                ;;
+            --no-cache)
+                NO_CACHE="--no-cache"
+                shift
+                ;;
+            *)
+                log_error "未知参数: $1"
+                show_help
+                exit 1
+                ;;
+        esac
+    done
+    
     # 检查Docker
     if ! command -v docker &> /dev/null; then
-        log_error "Docker未安装"
+        log_error "Docker未安装，请先运行 init-ecs.sh 安装Docker"
         exit 1
     fi
     
-    # 显示下载信息
-    if [ "$1" = "--info" ] || [ "$1" = "-i" ]; then
-        show_download_info
-        exit 0
+    # 检查Docker服务
+    if ! docker info &> /dev/null; then
+        log_error "Docker服务未运行，请执行: sudo systemctl start docker"
+        exit 1
     fi
     
-    download_packages
-    build_image
+    # 如果有 --no-cache 参数
+    if [ -n "$NO_CACHE" ]; then
+        log_warn "使用 --no-cache 模式，将重新下载所有组件"
+        cd "$DOCKER_DIR"
+        docker build --no-cache --progress=plain -t hadoop-ecosystem:latest .
+    else
+        build_image
+    fi
     
-    # 询问是否保存镜像
-    read -p "是否保存镜像为tar文件用于分发? (y/n): " SAVE_IMAGE
-    if [ "$SAVE_IMAGE" = "y" ] || [ "$SAVE_IMAGE" = "Y" ]; then
+    # 保存镜像
+    if [ "$AUTO_SAVE" = true ]; then
         save_image
+    else
+        echo ""
+        read -p "是否保存镜像为tar文件用于分发到其他节点? (y/n): " SAVE_CHOICE
+        if [ "$SAVE_CHOICE" = "y" ] || [ "$SAVE_CHOICE" = "Y" ]; then
+            save_image
+        fi
     fi
     
     log_info "============================================"
     log_info "  构建完成！"
     log_info "============================================"
+    echo ""
+    log_info "下一步: 使用 distribute-image.sh 将镜像分发到其他节点"
 }
 
 main "$@"
