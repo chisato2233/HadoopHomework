@@ -1,0 +1,46 @@
+# EditorConfig 配置
+# https://editorconfig.org
+
+root = true
+
+# 所有文件默认配置
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Hadoop/Linux 配置文件 - 强制使用 LF
+[config/**]
+end_of_line = lf
+
+# Shell 脚本 - 强制使用 LF
+[*.sh]
+end_of_line = lf
+
+# XML 配置文件
+[*.xml]
+end_of_line = lf
+indent_size = 4
+
+# Docker 相关文件
+[Dockerfile]
+end_of_line = lf
+
+[docker/**]
+end_of_line = lf
+
+# YAML 文件
+[*.{yml,yaml}]
+end_of_line = lf
+indent_size = 2
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = false
+
+# PowerShell 可以用 CRLF
+[*.ps1]
+end_of_line = crlf
+

@@ -7,7 +7,7 @@
     <!-- 元数据存储配置(MySQL) -->
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:mysql://hadoop1:3306/hive_metastore?createDatabaseIfNotExist=true&amp;useSSL=false&amp;characterEncoding=UTF-8</value>
+        <value>jdbc:mysql://mysql:3306/hive_metastore?createDatabaseIfNotExist=true&amp;useSSL=false&amp;characterEncoding=UTF-8</value>
         <description>Hive元数据MySQL连接URL</description>
     </property>
     

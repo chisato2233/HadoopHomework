@@ -2,7 +2,7 @@
 
 ## 📋 项目概述
 
-基于 Hadoop 生态的电商用户行为分析平台，实现用户行为数据的采集、清洗、存储和分析。使用 Docker 容器化部署，支持在本地机器上运行完整的 Hadoop 集群。
+基于 Hadoop 生态的电商用户行为分析平台，实现用户行为数据的采集、清洗、存储和分析。使用 Docker 容器化部署，支持在 Windows 本地机器上运行完整的 Hadoop 集群。
 
 ## 🏗️ 集群架构
 
@@ -51,11 +51,11 @@ HadoopHomework/
 │   ├── zookeeper/             # zoo.cfg
 │   ├── hbase/                 # hbase-site.xml
 │   └── hive/                  # hive-site.xml
-├── scripts/                   # 部署脚本
+├── scripts/                   # 部署脚本 (PowerShell)
 │   └── deploy/
-│       ├── build-image.sh     # 构建Docker镜像
-│       ├── start-cluster.sh   # 启动集群
-│       └── stop-cluster.sh    # 停止集群
+│       ├── build-image.ps1    # 构建Docker镜像
+│       ├── start-cluster.ps1  # 启动集群
+│       └── stop-cluster.ps1   # 停止集群
 ├── mapreduce/                 # MapReduce 程序
 ├── data/                      # 测试数据
 │   └── sample-logs/
@@ -68,50 +68,45 @@ HadoopHomework/
 
 ### 前置要求
 
-- **WSL2 + Docker Desktop** (推荐) 或 **Docker Engine** (Linux)
-- Docker Desktop 设置中启用 **WSL2 集成**
+- **Windows 10/11** + **Docker Desktop**
+- Docker Desktop 设置中启用 **WSL2 后端**
 - 内存建议 **16GB+**（集群运行需要较大内存）
 - 磁盘空间 **20GB+**
 
-### WSL 环境准备
-
-```bash
-# 1. 进入 WSL
-wsl
-
-# 2. 进入项目目录（Windows路径需要转换）
-cd /mnt/d/Code/MyCode/HadoopHomework
-
-# 或者（推荐）将项目克隆到 WSL 内部文件系统以获得更好性能
-# cd ~
-# git clone <repo_url> HadoopHomework
-# cd HadoopHomework
-```
-
 ### 1. 构建 Docker 镜像
 
-```bash
-# 在 WSL 中执行
-chmod +x scripts/deploy/*.sh
-./scripts/deploy/build-image.sh
+在 PowerShell 中执行：
+
+```powershell
+# 进入项目目录
+cd D:\Code\MyCode\HadoopHomework
+
+# 构建镜像
+.\scripts\deploy\build-image.ps1
 ```
 
 > ⏱️ 首次构建需要下载约 2GB 文件，请确保网络畅通
 
+如果遇到脚本执行策略问题：
+```powershell
+# 临时允许执行脚本
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+```
+
 ### 2. 启动集群
 
-```bash
-./scripts/deploy/start-cluster.sh
+```powershell
+.\scripts\deploy\start-cluster.ps1
 ```
 
 ### 3. 停止集群
 
-```bash
+```powershell
 # 停止集群（保留数据）
-./scripts/deploy/stop-cluster.sh
+.\scripts\deploy\stop-cluster.ps1
 
 # 停止集群并清理所有数据
-./scripts/deploy/stop-cluster.sh --clean
+.\scripts\deploy\stop-cluster.ps1 -Clean
 ```
 
 ## 👥 Docker 容器角色分配
@@ -139,7 +134,7 @@ chmod +x scripts/deploy/*.sh
 
 ### 进入容器
 
-```bash
+```powershell
 # 进入主节点
 docker exec -it hadoop1 bash
 
@@ -188,10 +183,10 @@ hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar w
 
 ## ⚠️ 注意事项
 
-1. **内存需求**：集群运行需要较大内存，建议分配给 Docker 至少 12GB
+1. **内存需求**：集群运行需要较大内存，建议在 Docker Desktop 设置中分配至少 12GB
 2. **首次启动**：首次启动会自动格式化 HDFS，后续启动会保留数据
 3. **端口占用**：确保本地端口 9870、8088、16010、10002、3306 等未被占用
-4. **Windows 用户**：建议使用 Git Bash 或 WSL2 运行脚本
+4. **脚本执行策略**：如遇到 PowerShell 脚本无法执行，使用 `Set-ExecutionPolicy Bypass -Scope Process`
 
 ## 📝 License
 
