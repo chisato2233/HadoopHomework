@@ -1,0 +1,169 @@
+# ============================================
+# Hadoop生态本地Docker集群配置
+# 包含: 1主节点(hadoop1) + 2从节点(hadoop2/hadoop3) + MySQL
+# ============================================
+
+services:
+  # ========================================
+  # Master节点 - hadoop1
+  # 运行: NameNode, ResourceManager, HBase Master, Hive
+  # ========================================
+  hadoop1:
+    image: hadoop-ecosystem:latest
+    container_name: hadoop1
+    hostname: hadoop1
+    privileged: true
+    networks:
+      hadoop-net:
+        ipv4_address: 172.18.0.2
+    ports:
+      # HDFS NameNode
+      - "9870:9870"     # HDFS Web UI
+      - "9000:9000"     # HDFS RPC
+      # YARN
+      - "8088:8088"     # YARN Web UI
+      # ZooKeeper
+      - "2181:2181"     # ZK Client
+      # HBase Master
+      - "16000:16000"   # HBase Master RPC
+      - "16010:16010"   # HBase Master Web UI
+      # Hive
+      - "10000:10000"   # HiveServer2
+      - "10002:10002"   # Hive Web UI
+      # JobHistory
+      - "19888:19888"   # JobHistory Web UI
+    environment:
+      - NODE_ROLE=master
+      - NODE_ID=1
+    volumes:
+      # 持久化数据
+      - hadoop1-data:/data
+      # 配置文件（相对于docker-compose.yml的位置）
+      - ../../config/hadoop:/usr/local/hadoop/etc/hadoop
+      - ../../config/zookeeper/zoo.cfg:/usr/local/zookeeper/conf/zoo.cfg
+      - ../../config/hbase:/usr/local/hbase/conf
+      # 项目代码和数据
+      - ../../mapreduce:/opt/mapreduce
+      - ../../data:/opt/data
+      - ../../hql:/opt/hql
+    extra_hosts:
+      - "hadoop1:172.18.0.2"
+      - "hadoop2:172.18.0.3"
+      - "hadoop3:172.18.0.4"
+    restart: unless-stopped
+    depends_on:
+      - mysql
+
+  # ========================================
+  # Slave节点1 - hadoop2
+  # 运行: DataNode, NodeManager, RegionServer, ZooKeeper
+  # ========================================
+  hadoop2:
+    image: hadoop-ecosystem:latest
+    container_name: hadoop2
+    hostname: hadoop2
+    privileged: true
+    networks:
+      hadoop-net:
+        ipv4_address: 172.18.0.3
+    ports:
+      # DataNode
+      - "9864:9864"     # DataNode Web UI
+      # NodeManager
+      - "8042:8042"     # NodeManager Web UI
+      # ZooKeeper
+      - "2182:2181"     # ZK Client (映射不同端口避免冲突)
+      # HBase RegionServer
+      - "16020:16020"   # RegionServer RPC
+      - "16030:16030"   # RegionServer Web UI
+    environment:
+      - NODE_ROLE=slave
+      - NODE_ID=2
+    volumes:
+      - hadoop2-data:/data
+      - ../../config/hadoop:/usr/local/hadoop/etc/hadoop
+      - ../../config/zookeeper/zoo.cfg:/usr/local/zookeeper/conf/zoo.cfg
+      - ../../config/hbase:/usr/local/hbase/conf
+    extra_hosts:
+      - "hadoop1:172.18.0.2"
+      - "hadoop2:172.18.0.3"
+      - "hadoop3:172.18.0.4"
+    restart: unless-stopped
+
+  # ========================================
+  # Slave节点2 - hadoop3
+  # 运行: DataNode, NodeManager, RegionServer, ZooKeeper
+  # ========================================
+  hadoop3:
+    image: hadoop-ecosystem:latest
+    container_name: hadoop3
+    hostname: hadoop3
+    privileged: true
+    networks:
+      hadoop-net:
+        ipv4_address: 172.18.0.4
+    ports:
+      # DataNode
+      - "9865:9864"     # DataNode Web UI (映射不同端口)
+      # NodeManager
+      - "8043:8042"     # NodeManager Web UI
+      # ZooKeeper
+      - "2183:2181"     # ZK Client
+      # HBase RegionServer
+      - "16021:16020"   # RegionServer RPC
+      - "16031:16030"   # RegionServer Web UI
+    environment:
+      - NODE_ROLE=slave
+      - NODE_ID=3
+    volumes:
+      - hadoop3-data:/data
+      - ../../config/hadoop:/usr/local/hadoop/etc/hadoop
+      - ../../config/zookeeper/zoo.cfg:/usr/local/zookeeper/conf/zoo.cfg
+      - ../../config/hbase:/usr/local/hbase/conf
+    extra_hosts:
+      - "hadoop1:172.18.0.2"
+      - "hadoop2:172.18.0.3"
+      - "hadoop3:172.18.0.4"
+    restart: unless-stopped
+
+  # ========================================
+  # MySQL - Hive Metastore数据库
+  # ========================================
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-hive
+    hostname: mysql
+    networks:
+      hadoop-net:
+        ipv4_address: 172.18.0.10
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: hive_metastore
+      MYSQL_USER: hive
+      MYSQL_PASSWORD: hive123
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+# ========================================
+# 网络配置
+# ========================================
+networks:
+  hadoop-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
+
+# ========================================
+# 数据卷
+# ========================================
+volumes:
+  hadoop1-data:
+  hadoop2-data:
+  hadoop3-data:
+  mysql-data:
+

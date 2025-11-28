@@ -2,38 +2,24 @@
 
 ## 📋 项目概述
 
-基于 Hadoop 生态的电商用户行为分析平台，实现用户行为数据的采集、清洗、存储和分析。
-
-## 🖥️ 服务器信息
-
-| 节点 | 主机名 | 内网IP | 公网IP | 系统 |
-|------|--------|--------|--------|------|
-| **主节点** | MainNode | 172.16.93.243 | 120.26.127.101 (弹性) | Ubuntu 22.04 |
-| **从节点1** | Node1 | 172.21.108.43 | - | Ubuntu 22.04 |
-| **从节点2** | Node2 | 172.16.93.242 | - | Ubuntu 22.04 |
-
-> ⚠️ 注意：MainNode公网IP为弹性付费，每次启动可能变化
+基于 Hadoop 生态的电商用户行为分析平台，实现用户行为数据的采集、清洗、存储和分析。使用 Docker 容器化部署，支持在本地机器上运行完整的 Hadoop 集群。
 
 ## 🏗️ 集群架构
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        阿里云 VPC 网络                           │
+│                    本地 Docker 网络 (172.18.0.0/24)              │
 ├─────────────────┬─────────────────┬─────────────────────────────┤
-│    MainNode     │     Node1       │          Node2              │
-│  172.16.93.243  │  172.21.108.43  │      172.16.93.242          │
+│    hadoop1      │     hadoop2     │          hadoop3            │
+│   172.18.0.2    │   172.18.0.3    │        172.18.0.4           │
+│    (master)     │    (slave1)     │         (slave2)            │
 │                 │                 │                             │
-│ ┌─────────────┐ │ ┌─────────────┐ │ ┌─────────────┬───────────┐ │
-│ │   hadoop1   │ │ │   hadoop2   │ │ │   hadoop3   │  hadoop4  │ │
-│ │   (master)  │ │ │   (slave1)  │ │ │   (slave2)  │  (可选)   │ │
-│ │             │ │ │             │ │ │             │           │ │
-│ │ NameNode    │ │ │ DataNode    │ │ │ DataNode    │ DataNode  │ │
-│ │ ResourceMgr │ │ │ NodeManager │ │ │ NodeManager │ NodeMgr   │ │
-│ │ ZooKeeper   │ │ │ ZooKeeper   │ │ │ ZooKeeper   │           │ │
-│ │ HMaster     │ │ │ RegionServer│ │ │ RegionServer│ RegionSvr │ │
-│ │ HiveServer  │ │ │             │ │ │             │           │ │
-│ │ MySQL       │ │ │             │ │ │             │           │ │
-│ └─────────────┘ │ └─────────────┘ │ └─────────────┴───────────┘ │
+│ NameNode        │ DataNode        │ DataNode                    │
+│ ResourceManager │ NodeManager     │ NodeManager                 │
+│ ZooKeeper       │ ZooKeeper       │ ZooKeeper                   │
+│ HBase Master    │ RegionServer    │ RegionServer                │
+│ HiveServer2     │                 │                             │
+│ MySQL(元数据)    │                 │                             │
 └─────────────────┴─────────────────┴─────────────────────────────┘
 ```
 
@@ -55,17 +41,24 @@
 HadoopHomework/
 ├── docker/                    # Docker 配置
 │   ├── base/                  # 基础镜像 Dockerfile
-│   └── compose/               # 各节点 Docker Compose 文件
+│   │   ├── Dockerfile
+│   │   └── scripts/
+│   │       └── entrypoint.sh
+│   └── compose/               # Docker Compose 配置
+│       └── docker-compose.yml
 ├── config/                    # Hadoop生态配置文件
 │   ├── hadoop/                # core-site, hdfs-site, yarn-site
 │   ├── zookeeper/             # zoo.cfg
 │   ├── hbase/                 # hbase-site.xml
 │   └── hive/                  # hive-site.xml
-├── scripts/                   # 部署和运维脚本
-│   ├── init/                  # ECS初始化脚本 (Ubuntu 22.04)
-│   └── deploy/                # 集群部署脚本
+├── scripts/                   # 部署脚本
+│   └── deploy/
+│       ├── build-image.sh     # 构建Docker镜像
+│       ├── start-cluster.sh   # 启动集群
+│       └── stop-cluster.sh    # 停止集群
 ├── mapreduce/                 # MapReduce 程序
 ├── data/                      # 测试数据
+│   └── sample-logs/
 ├── hql/                       # Hive SQL 脚本
 ├── docs/                      # 项目文档
 └── visualization/             # 可视化
@@ -73,63 +66,132 @@ HadoopHomework/
 
 ## 🚀 快速开始
 
-### 1. 初始化ECS（每台机器执行）
+### 前置要求
+
+- **WSL2 + Docker Desktop** (推荐) 或 **Docker Engine** (Linux)
+- Docker Desktop 设置中启用 **WSL2 集成**
+- 内存建议 **16GB+**（集群运行需要较大内存）
+- 磁盘空间 **20GB+**
+
+### WSL 环境准备
+
 ```bash
-# 上传项目到服务器后执行
-chmod +x scripts/init/init-ecs.sh
-sudo ./scripts/init/init-ecs.sh
+# 1. 进入 WSL
+wsl
+
+# 2. 进入项目目录（Windows路径需要转换）
+cd /mnt/d/Code/MyCode/HadoopHomework
+
+# 或者（推荐）将项目克隆到 WSL 内部文件系统以获得更好性能
+# cd ~
+# git clone <repo_url> HadoopHomework
+# cd HadoopHomework
 ```
 
-### 2. 构建Docker镜像（MainNode执行）
+### 1. 构建 Docker 镜像
+
 ```bash
+# 在 WSL 中执行
+chmod +x scripts/deploy/*.sh
 ./scripts/deploy/build-image.sh
 ```
 
-### 3. 分发镜像到其他节点
-```bash
-./scripts/deploy/distribute-image.sh
-```
+> ⏱️ 首次构建需要下载约 2GB 文件，请确保网络畅通
 
-### 4. 启动集群
+### 2. 启动集群
+
 ```bash
-# MainNode
 ./scripts/deploy/start-cluster.sh
-
-# Node1
-cd docker/compose && docker compose -f docker-compose-slave1.yml up -d
-
-# Node2
-cd docker/compose && docker compose -f docker-compose-slave2.yml up -d
 ```
 
-## 👥 Docker容器角色分配
+### 3. 停止集群
 
-| 容器名 | 运行节点 | 容器IP | 角色 |
-|--------|----------|--------|------|
-| hadoop1 | MainNode | 172.18.0.2 | NameNode, ResourceManager, ZK, HMaster, Hive |
-| hadoop2 | Node1 | 172.18.0.3 | DataNode, NodeManager, ZK, RegionServer |
-| hadoop3 | Node2 | 172.18.0.4 | DataNode, NodeManager, ZK, RegionServer |
-| hadoop4 | Node2 | 172.18.0.5 | DataNode, NodeManager, RegionServer (可选) |
+```bash
+# 停止集群（保留数据）
+./scripts/deploy/stop-cluster.sh
+
+# 停止集群并清理所有数据
+./scripts/deploy/stop-cluster.sh --clean
+```
+
+## 👥 Docker 容器角色分配
+
+| 容器名 | 容器IP | 角色 |
+|--------|--------|------|
+| hadoop1 | 172.18.0.2 | NameNode, ResourceManager, ZK, HMaster, Hive |
+| hadoop2 | 172.18.0.3 | DataNode, NodeManager, ZK, RegionServer |
+| hadoop3 | 172.18.0.4 | DataNode, NodeManager, ZK, RegionServer |
+| mysql-hive | 172.18.0.10 | Hive Metastore 数据库 |
 
 ## 📊 Web UI 访问
 
+集群启动后，可以通过以下地址访问各服务的 Web UI：
+
 | 服务 | 端口 | 地址 |
 |------|------|------|
-| HDFS NameNode | 9870 | http://120.26.127.101:9870 |
-| YARN ResourceManager | 8088 | http://120.26.127.101:8088 |
-| HBase Master | 16010 | http://120.26.127.101:16010 |
-| Hive WebUI | 10002 | http://120.26.127.101:10002 |
+| HDFS NameNode | 9870 | http://localhost:9870 |
+| YARN ResourceManager | 8088 | http://localhost:8088 |
+| HBase Master | 16010 | http://localhost:16010 |
+| Hive WebUI | 10002 | http://localhost:10002 |
+| MapReduce JobHistory | 19888 | http://localhost:19888 |
 
-## 🔧 SSH连接
+## 🔧 常用命令
+
+### 进入容器
 
 ```bash
-# 连接主节点
-ssh root@120.26.127.101
+# 进入主节点
+docker exec -it hadoop1 bash
 
-# 从主节点跳转到其他节点（内网）
-ssh root@172.21.108.43   # Node1
-ssh root@172.16.93.242   # Node2
+# 进入从节点
+docker exec -it hadoop2 bash
+docker exec -it hadoop3 bash
 ```
+
+### 查看集群状态
+
+```bash
+# 进入hadoop1容器后执行
+
+# 查看HDFS状态
+hdfs dfsadmin -report
+
+# 查看YARN节点
+yarn node -list
+
+# 查看ZooKeeper状态
+zkServer.sh status
+
+# 查看HBase状态
+echo "status" | hbase shell
+```
+
+### HDFS 基础操作
+
+```bash
+# 上传文件到HDFS
+hdfs dfs -put local_file /user/hadoop/
+
+# 查看HDFS目录
+hdfs dfs -ls /user/hadoop/
+
+# 下载文件
+hdfs dfs -get /user/hadoop/file local_path
+```
+
+### 运行 MapReduce 任务
+
+```bash
+# 运行WordCount示例
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar wordcount /input /output
+```
+
+## ⚠️ 注意事项
+
+1. **内存需求**：集群运行需要较大内存，建议分配给 Docker 至少 12GB
+2. **首次启动**：首次启动会自动格式化 HDFS，后续启动会保留数据
+3. **端口占用**：确保本地端口 9870、8088、16010、10002、3306 等未被占用
+4. **Windows 用户**：建议使用 Git Bash 或 WSL2 运行脚本
 
 ## 📝 License
 

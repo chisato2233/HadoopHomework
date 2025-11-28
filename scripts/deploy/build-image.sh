@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================
 # 构建Hadoop生态Docker镜像
-# 需要先下载软件包到 docker/base/packages 目录
+# 用于本地部署
 # ============================================
 
 set -e
@@ -50,34 +50,16 @@ build_image() {
     fi
 }
 
-# 保存镜像为tar文件（用于分发到其他ECS）
-save_image() {
-    log_step "保存镜像为tar文件..."
-    
-    OUTPUT_FILE="$PROJECT_DIR/hadoop-ecosystem.tar"
-    
-    docker save hadoop-ecosystem:latest -o "$OUTPUT_FILE"
-    
-    # 压缩
-    log_info "压缩镜像文件..."
-    gzip -f "$OUTPUT_FILE"
-    
-    log_info "镜像已保存到: ${OUTPUT_FILE}.gz"
-    log_info "文件大小: $(du -h ${OUTPUT_FILE}.gz | cut -f1)"
-}
-
 # 显示帮助
 show_help() {
     echo "用法: $0 [选项]"
     echo ""
     echo "选项:"
     echo "  -h, --help     显示帮助信息"
-    echo "  -s, --save     构建后自动保存为tar.gz文件"
     echo "  --no-cache     不使用缓存重新构建"
     echo ""
     echo "示例:"
     echo "  $0              # 构建镜像"
-    echo "  $0 -s           # 构建并保存为tar文件"
     echo "  $0 --no-cache   # 清除缓存重新构建"
 }
 
@@ -88,7 +70,6 @@ main() {
     log_info "============================================"
     
     # 解析参数
-    AUTO_SAVE=false
     NO_CACHE=""
     
     while [[ $# -gt 0 ]]; do
@@ -96,10 +77,6 @@ main() {
             -h|--help)
                 show_help
                 exit 0
-                ;;
-            -s|--save)
-                AUTO_SAVE=true
-                shift
                 ;;
             --no-cache)
                 NO_CACHE="--no-cache"
@@ -115,13 +92,13 @@ main() {
     
     # 检查Docker
     if ! command -v docker &> /dev/null; then
-        log_error "Docker未安装，请先运行 init-ecs.sh 安装Docker"
+        log_error "Docker未安装，请先安装Docker Desktop"
         exit 1
     fi
     
     # 检查Docker服务
     if ! docker info &> /dev/null; then
-        log_error "Docker服务未运行，请执行: sudo systemctl start docker"
+        log_error "Docker服务未运行，请启动Docker Desktop"
         exit 1
     fi
     
@@ -134,22 +111,11 @@ main() {
         build_image
     fi
     
-    # 保存镜像
-    if [ "$AUTO_SAVE" = true ]; then
-        save_image
-    else
-        echo ""
-        read -p "是否保存镜像为tar文件用于分发到其他节点? (y/n): " SAVE_CHOICE
-        if [ "$SAVE_CHOICE" = "y" ] || [ "$SAVE_CHOICE" = "Y" ]; then
-            save_image
-        fi
-    fi
-    
     log_info "============================================"
     log_info "  构建完成！"
     log_info "============================================"
     echo ""
-    log_info "下一步: 使用 distribute-image.sh 将镜像分发到其他节点"
+    log_info "下一步: 运行 start-cluster.sh 启动集群"
 }
 
 main "$@"

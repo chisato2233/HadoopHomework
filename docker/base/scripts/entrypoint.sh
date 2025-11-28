@@ -1,4 +1,7 @@
 #!/bin/bash
+# ============================================
+# Hadoop容器启动脚本
+# ============================================
 
 # 启动SSH服务
 /usr/sbin/sshd
@@ -13,6 +16,9 @@ echo "  Node ID: $NODE_ID"
 echo "  Hostname: $(hostname)"
 echo "=========================================="
 
+# 创建ZK myid文件
+echo $NODE_ID > /data/zookeeper/data/myid
+
 # 等待网络就绪
 sleep 3
 
@@ -21,9 +27,9 @@ case $ROLE in
     "master")
         echo "[INFO] Starting as Master Node..."
         
-        # 等待所有节点就绪
+        # 等待从节点就绪
         echo "[INFO] Waiting for slave nodes..."
-        sleep 10
+        sleep 15
         
         # 首次启动时格式化HDFS
         if [ ! -f /data/hadoop/initialized ]; then
@@ -47,30 +53,36 @@ case $ROLE in
         echo "[INFO] Starting YARN..."
         $HADOOP_HOME/sbin/start-yarn.sh
         
+        # 启动MapReduce历史服务器
+        echo "[INFO] Starting JobHistory Server..."
+        $HADOOP_HOME/bin/mapred --daemon start historyserver
+        
         # 等待HDFS就绪
         sleep 10
         
         # 启动HBase
         echo "[INFO] Starting HBase..."
         $HBASE_HOME/bin/start-hbase.sh
+        
+        echo "[INFO] All services started!"
         ;;
         
     "slave")
         echo "[INFO] Starting as Slave Node..."
         
-        # 创建ZK myid文件
-        echo $NODE_ID > /data/zookeeper/data/myid
-        
         # 启动ZooKeeper
         echo "[INFO] Starting ZooKeeper..."
         $ZOOKEEPER_HOME/bin/zkServer.sh start
         
-        # 从节点服务由Master通过SSH启动
+        # 从节点的DataNode和NodeManager由Master通过SSH启动
         echo "[INFO] Slave node ready, waiting for master to start services..."
         ;;
 esac
 
+# 显示进程状态
+echo "[INFO] Running processes:"
+jps
+
 # 保持容器运行
 echo "[INFO] Container is running. Press Ctrl+C to stop."
 tail -f /dev/null
-

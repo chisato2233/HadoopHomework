@@ -1,13 +1,13 @@
 #!/bin/bash
 # ============================================
-# 启动Hadoop集群
-# 在Master ECS上执行
+# 启动Hadoop集群（本地Docker部署）
 # ============================================
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
+COMPOSE_FILE="$PROJECT_DIR/docker/compose/docker-compose.yml"
 
 # 颜色输出
 RED='\033[0;31m'
@@ -21,56 +21,15 @@ log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 log_step() { echo -e "${BLUE}[STEP]${NC} $1"; }
 
-# 配置文件
-ENV_FILE="$PROJECT_DIR/scripts/deploy/.env"
-
-# 加载环境变量
-load_env() {
-    if [ -f "$ENV_FILE" ]; then
-        source "$ENV_FILE"
-        log_info "环境变量已加载"
-    else
-        log_warn "环境变量文件不存在，使用默认配置"
-        # 默认配置
-        export MASTER_IP="127.0.0.1"
-        export SLAVE1_IP="127.0.0.1"
-        export SLAVE2_IP="127.0.0.1"
-    fi
-}
-
-# 启动Master节点容器
-start_master() {
-    log_step "启动Master节点..."
+# 启动集群容器
+start_cluster() {
+    log_step "启动Hadoop集群..."
     
     cd "$PROJECT_DIR/docker/compose"
     
-    docker compose -f docker-compose-master.yml up -d
+    docker compose -f docker-compose.yml up -d
     
-    log_info "Master节点容器已启动"
-}
-
-# 等待服务就绪
-wait_for_service() {
-    local host=$1
-    local port=$2
-    local service=$3
-    local max_attempts=30
-    local attempt=1
-    
-    log_info "等待 $service ($host:$port) 就绪..."
-    
-    while [ $attempt -le $max_attempts ]; do
-        if nc -z "$host" "$port" 2>/dev/null; then
-            log_info "$service 已就绪"
-            return 0
-        fi
-        echo -n "."
-        sleep 2
-        ((attempt++))
-    done
-    
-    log_error "$service 启动超时"
-    return 1
+    log_info "所有容器已启动"
 }
 
 # 初始化HDFS目录
@@ -78,6 +37,7 @@ init_hdfs_dirs() {
     log_step "初始化HDFS目录..."
     
     # 等待HDFS就绪
+    log_info "等待HDFS就绪（约30秒）..."
     sleep 30
     
     docker exec hadoop1 bash -c "
@@ -97,7 +57,7 @@ init_hdfs_dirs() {
         
         echo 'HDFS目录初始化完成'
         hdfs dfs -ls /user
-    "
+    " 2>/dev/null || log_warn "HDFS目录初始化失败，可能服务还未完全就绪"
     
     log_info "HDFS目录初始化完成"
 }
@@ -108,9 +68,15 @@ verify_cluster() {
     
     echo ""
     echo "=========================================="
+    echo "  运行中的容器"
+    echo "=========================================="
+    docker compose -f "$COMPOSE_FILE" ps
+    
+    echo ""
+    echo "=========================================="
     echo "  HDFS状态"
     echo "=========================================="
-    docker exec hadoop1 hdfs dfsadmin -report 2>/dev/null | head -20
+    docker exec hadoop1 hdfs dfsadmin -report 2>/dev/null | head -20 || echo "HDFS正在启动..."
     
     echo ""
     echo "=========================================="
@@ -133,31 +99,50 @@ verify_cluster() {
 
 # 显示访问信息
 show_access_info() {
-    local master_ip=${MASTER_IP:-"localhost"}
-    
     echo ""
     echo -e "${GREEN}============================================${NC}"
     echo -e "${GREEN}  集群启动完成！Web UI访问地址：${NC}"
     echo -e "${GREEN}============================================${NC}"
     echo ""
-    echo -e "  HDFS NameNode:     http://${master_ip}:9870"
-    echo -e "  YARN ResourceMgr:  http://${master_ip}:8088"
-    echo -e "  HBase Master:      http://${master_ip}:16010"
-    echo -e "  Hive WebUI:        http://${master_ip}:10002"
+    echo -e "  HDFS NameNode:     http://localhost:9870"
+    echo -e "  YARN ResourceMgr:  http://localhost:8088"
+    echo -e "  HBase Master:      http://localhost:16010"
+    echo -e "  Hive WebUI:        http://localhost:10002"
+    echo -e "  JobHistory:        http://localhost:19888"
     echo ""
     echo -e "${GREEN}============================================${NC}"
-    echo -e "  进入容器: docker exec -it hadoop1 bash"
+    echo -e "  进入主节点: docker exec -it hadoop1 bash"
+    echo -e "  进入从节点: docker exec -it hadoop2 bash"
+    echo -e "            docker exec -it hadoop3 bash"
     echo -e "${GREEN}============================================${NC}"
 }
 
 # 主函数
 main() {
     log_info "============================================"
-    log_info "  Hadoop集群启动脚本"
+    log_info "  Hadoop集群启动脚本（本地Docker部署）"
     log_info "============================================"
     
-    load_env
-    start_master
+    # 检查Docker
+    if ! command -v docker &> /dev/null; then
+        log_error "Docker未安装，请先安装Docker Desktop"
+        exit 1
+    fi
+    
+    # 检查Docker服务
+    if ! docker info &> /dev/null; then
+        log_error "Docker服务未运行，请启动Docker Desktop"
+        exit 1
+    fi
+    
+    # 检查镜像是否存在
+    if ! docker images | grep -q "hadoop-ecosystem"; then
+        log_error "镜像 hadoop-ecosystem:latest 不存在"
+        log_info "请先运行 build-image.sh 构建镜像"
+        exit 1
+    fi
+    
+    start_cluster
     
     # 等待服务启动
     log_info "等待服务启动（约60秒）..."
@@ -169,4 +154,3 @@ main() {
 }
 
 main "$@"
-
