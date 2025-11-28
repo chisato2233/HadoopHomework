@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  电商用户行为分析平台 - MapReduce配置
+-->
+<configuration>
+    <!-- 使用YARN作为执行框架 -->
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+        <description>MapReduce作业运行在YARN上</description>
+    </property>
+    
+    <!-- JobHistory Server配置 -->
+    <property>
+        <name>mapreduce.jobhistory.address</name>
+        <value>hadoop1:10020</value>
+    </property>
+    
+    <property>
+        <name>mapreduce.jobhistory.webapp.address</name>
+        <value>hadoop1:19888</value>
+    </property>
+    
+    <!-- Map任务内存 -->
+    <property>
+        <name>mapreduce.map.memory.mb</name>
+        <value>1024</value>
+        <description>Map任务内存(1GB)</description>
+    </property>
+    
+    <property>
+        <name>mapreduce.map.java.opts</name>
+        <value>-Xmx820m</value>
+    </property>
+    
+    <!-- Reduce任务内存 -->
+    <property>
+        <name>mapreduce.reduce.memory.mb</name>
+        <value>1024</value>
+        <description>Reduce任务内存(1GB)</description>
+    </property>
+    
+    <property>
+        <name>mapreduce.reduce.java.opts</name>
+        <value>-Xmx820m</value>
+    </property>
+    
+    <!-- Application Master配置 -->
+    <property>
+        <name>yarn.app.mapreduce.am.resource.mb</name>
+        <value>1024</value>
+    </property>
+    
+    <!-- Hadoop类路径 -->
+    <property>
+        <name>mapreduce.application.classpath</name>
+        <value>$HADOOP_HOME/share/hadoop/mapreduce/*:$HADOOP_HOME/share/hadoop/mapreduce/lib/*</value>
+    </property>
+</configuration>
+

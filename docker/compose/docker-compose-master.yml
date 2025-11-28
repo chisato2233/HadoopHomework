@@ -1,0 +1,84 @@
+# Docker Compose - Master ECS 节点配置
+# 在主服务器上运行，包含hadoop1(主节点)
+
+version: '3.8'
+
+services:
+  hadoop1:
+    image: hadoop-ecosystem:latest
+    container_name: hadoop1
+    hostname: hadoop1
+    privileged: true
+    networks:
+      hadoop-net:
+        ipv4_address: 172.18.0.2
+    ports:
+      # SSH
+      - "2201:22"
+      # HDFS NameNode
+      - "9870:9870"
+      - "9000:9000"
+      # YARN
+      - "8088:8088"
+      # ZooKeeper
+      - "2181:2181"
+      # HBase Master
+      - "16000:16000"
+      - "16010:16010"
+      # Hive
+      - "10000:10000"
+      - "10002:10002"
+      # MySQL
+      - "3306:3306"
+      # JobHistory
+      - "19888:19888"
+    environment:
+      - NODE_ROLE=master
+      - NODE_ID=1
+    volumes:
+      # 持久化数据
+      - hadoop1-data:/data
+      # 配置文件
+      - ../../../config/hadoop:/usr/local/hadoop/etc/hadoop
+      - ../../../config/zookeeper/zoo.cfg:/usr/local/zookeeper/conf/zoo.cfg
+      - ../../../config/hbase:/usr/local/hbase/conf
+      # 项目代码
+      - ../../../mapreduce:/opt/mapreduce
+      - ../../../data:/opt/data
+      - ../../../hql:/opt/hql
+    extra_hosts:
+      - "hadoop1:172.18.0.2"
+      - "hadoop2:${SLAVE1_IP:-172.18.0.3}"
+      - "hadoop3:${SLAVE2_IP:-172.18.0.4}"
+      - "hadoop4:${SLAVE2_IP2:-172.18.0.5}"
+    restart: unless-stopped
+    
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-hive
+    hostname: mysql
+    networks:
+      hadoop-net:
+        ipv4_address: 172.18.0.10
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: hive_metastore
+      MYSQL_USER: hive
+      MYSQL_PASSWORD: hive123
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+
+networks:
+  hadoop-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
+
+volumes:
+  hadoop1-data:
+  mysql-data:
+

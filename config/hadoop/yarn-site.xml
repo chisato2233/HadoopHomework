@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  电商用户行为分析平台 - YARN配置
+-->
+<configuration>
+    <!-- ResourceManager地址 -->
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>hadoop1</value>
+        <description>ResourceManager所在节点</description>
+    </property>
+    
+    <!-- ResourceManager Web UI -->
+    <property>
+        <name>yarn.resourcemanager.webapp.address</name>
+        <value>hadoop1:8088</value>
+        <description>ResourceManager Web UI地址</description>
+    </property>
+    
+    <!-- NodeManager配置 -->
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+        <description>启用MapReduce Shuffle服务</description>
+    </property>
+    
+    <!-- NodeManager资源配置 -->
+    <property>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>4096</value>
+        <description>每个NodeManager可用内存(4GB)</description>
+    </property>
+    
+    <property>
+        <name>yarn.nodemanager.resource.cpu-vcores</name>
+        <value>2</value>
+        <description>每个NodeManager可用CPU核数</description>
+    </property>
+    
+    <!-- 调度器配置 -->
+    <property>
+        <name>yarn.scheduler.minimum-allocation-mb</name>
+        <value>512</value>
+        <description>容器最小内存分配</description>
+    </property>
+    
+    <property>
+        <name>yarn.scheduler.maximum-allocation-mb</name>
+        <value>4096</value>
+        <description>容器最大内存分配</description>
+    </property>
+    
+    <!-- 日志聚合 -->
+    <property>
+        <name>yarn.log-aggregation-enable</name>
+        <value>true</value>
+        <description>启用日志聚合</description>
+    </property>
+    
+    <property>
+        <name>yarn.log-aggregation.retain-seconds</name>
+        <value>604800</value>
+        <description>日志保留时间(7天)</description>
+    </property>
+    
+    <!-- 关闭虚拟内存检查 -->
+    <property>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+        <value>false</value>
+        <description>关闭虚拟内存检查，避免容器被kill</description>
+    </property>
+</configuration>
+

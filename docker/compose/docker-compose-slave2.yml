@@ -1,0 +1,89 @@
+# Docker Compose - Slave2 ECS 节点配置
+# 在从服务器2上运行，包含hadoop3和可选的hadoop4
+
+version: '3.8'
+
+services:
+  hadoop3:
+    image: hadoop-ecosystem:latest
+    container_name: hadoop3
+    hostname: hadoop3
+    privileged: true
+    networks:
+      hadoop-net:
+        ipv4_address: 172.18.0.4
+    ports:
+      # SSH
+      - "2203:22"
+      # DataNode
+      - "9864:9864"
+      # NodeManager
+      - "8042:8042"
+      # ZooKeeper
+      - "2181:2181"
+      # HBase RegionServer
+      - "16020:16020"
+      - "16030:16030"
+    environment:
+      - NODE_ROLE=slave
+      - NODE_ID=3
+    volumes:
+      # 持久化数据
+      - hadoop3-data:/data
+      # 配置文件
+      - ../../../config/hadoop:/usr/local/hadoop/etc/hadoop
+      - ../../../config/zookeeper/zoo.cfg:/usr/local/zookeeper/conf/zoo.cfg
+      - ../../../config/hbase:/usr/local/hbase/conf
+    extra_hosts:
+      - "hadoop1:${MASTER_IP:-172.18.0.2}"
+      - "hadoop2:${SLAVE1_IP:-172.18.0.3}"
+      - "hadoop3:172.18.0.4"
+      - "hadoop4:172.18.0.5"
+    restart: unless-stopped
+
+  # 可选节点：hadoop4（需要更多资源时启用）
+  hadoop4:
+    image: hadoop-ecosystem:latest
+    container_name: hadoop4
+    hostname: hadoop4
+    privileged: true
+    profiles:
+      - extended  # 使用 docker-compose --profile extended up 启用
+    networks:
+      hadoop-net:
+        ipv4_address: 172.18.0.5
+    ports:
+      # SSH
+      - "2204:22"
+      # DataNode
+      - "9865:9864"
+      # NodeManager
+      - "8043:8042"
+      # HBase RegionServer
+      - "16021:16020"
+      - "16031:16030"
+    environment:
+      - NODE_ROLE=slave
+      - NODE_ID=4
+    volumes:
+      - hadoop4-data:/data
+      - ../../../config/hadoop:/usr/local/hadoop/etc/hadoop
+      - ../../../config/hbase:/usr/local/hbase/conf
+    extra_hosts:
+      - "hadoop1:${MASTER_IP:-172.18.0.2}"
+      - "hadoop2:${SLAVE1_IP:-172.18.0.3}"
+      - "hadoop3:172.18.0.4"
+      - "hadoop4:172.18.0.5"
+    restart: unless-stopped
+
+networks:
+  hadoop-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
+
+volumes:
+  hadoop3-data:
+  hadoop4-data:
+

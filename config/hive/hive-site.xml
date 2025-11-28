@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  电商用户行为分析平台 - Hive配置
+-->
+<configuration>
+    <!-- 元数据存储配置(MySQL) -->
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:mysql://hadoop1:3306/hive_metastore?createDatabaseIfNotExist=true&amp;useSSL=false&amp;characterEncoding=UTF-8</value>
+        <description>Hive元数据MySQL连接URL</description>
+    </property>
+    
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>com.mysql.jdbc.Driver</value>
+    </property>
+    
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>hive</value>
+    </property>
+    
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>hive123</value>
+    </property>
+    
+    <!-- Hive数据仓库目录 -->
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>/user/hive/warehouse</value>
+        <description>Hive数据仓库在HDFS上的目录</description>
+    </property>
+    
+    <!-- 元数据Schema验证 -->
+    <property>
+        <name>hive.metastore.schema.verification</name>
+        <value>false</value>
+    </property>
+    
+    <!-- HiveServer2配置 -->
+    <property>
+        <name>hive.server2.thrift.port</name>
+        <value>10000</value>
+    </property>
+    
+    <property>
+        <name>hive.server2.thrift.bind.host</name>
+        <value>hadoop1</value>
+    </property>
+    
+    <property>
+        <name>hive.server2.webui.port</name>
+        <value>10002</value>
+    </property>
+    
+    <!-- 执行引擎 -->
+    <property>
+        <name>hive.execution.engine</name>
+        <value>mr</value>
+        <description>使用MapReduce作为执行引擎</description>
+    </property>
+    
+    <!-- 本地模式（小数据量自动启用） -->
+    <property>
+        <name>hive.exec.mode.local.auto</name>
+        <value>true</value>
+    </property>
+    
+    <!-- 显示表头 -->
+    <property>
+        <name>hive.cli.print.header</name>
+        <value>true</value>
+    </property>
+    
+    <!-- 显示当前数据库 -->
+    <property>
+        <name>hive.cli.print.current.db</name>
+        <value>true</value>
+    </property>
+</configuration>
+

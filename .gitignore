@@ -1,0 +1,35 @@
+# 软件包（太大不提交）
+docker/base/packages/
+*.tar.gz
+*.tar
+
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.swp
+*~
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Java/Maven
+target/
+*.class
+*.jar
+
+# 系统文件
+.DS_Store
+Thumbs.db
+

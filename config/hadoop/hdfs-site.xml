@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  电商用户行为分析平台 - HDFS配置
+-->
+<configuration>
+    <!-- 副本数量 -->
+    <property>
+        <name>dfs.replication</name>
+        <value>2</value>
+        <description>HDFS数据块副本数，根据集群规模设为2</description>
+    </property>
+    
+    <!-- NameNode数据目录 -->
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:///data/hadoop/name</value>
+        <description>NameNode元数据存储目录</description>
+    </property>
+    
+    <!-- DataNode数据目录 -->
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:///data/hadoop/data</value>
+        <description>DataNode数据块存储目录</description>
+    </property>
+    
+    <!-- NameNode Web UI -->
+    <property>
+        <name>dfs.namenode.http-address</name>
+        <value>hadoop1:9870</value>
+        <description>NameNode Web UI地址</description>
+    </property>
+    
+    <!-- Secondary NameNode地址 -->
+    <property>
+        <name>dfs.namenode.secondary.http-address</name>
+        <value>hadoop1:9868</value>
+        <description>Secondary NameNode Web UI地址</description>
+    </property>
+    
+    <!-- 权限检查（开发环境关闭） -->
+    <property>
+        <name>dfs.permissions.enabled</name>
+        <value>false</value>
+        <description>关闭HDFS权限检查，方便开发调试</description>
+    </property>
+    
+    <!-- 数据块大小 -->
+    <property>
+        <name>dfs.blocksize</name>
+        <value>134217728</value>
+        <description>HDFS数据块大小(128MB)</description>
+    </property>
+    
+    <!-- WebHDFS启用 -->
+    <property>
+        <name>dfs.webhdfs.enabled</name>
+        <value>true</value>
+    </property>
+</configuration>
+
