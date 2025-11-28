@@ -41,10 +41,10 @@
 
 | 组件 | 版本 | 用途 |
 |------|------|------|
-| JDK | 1.8 | Java运行环境 |
+| JDK | Adoptium OpenJDK 8u392 | Java运行环境 |
 | Hadoop | 3.3.6 | 分布式存储与计算 |
-| ZooKeeper | 3.6.4 | 分布式协调服务 |
-| HBase | 2.4.17 | 列式数据库 |
+| ZooKeeper | 3.8.4 | 分布式协调服务 |
+| HBase | 2.5.7 | 列式数据库 |
 | Hive | 3.1.3 | 数据仓库 |
 | MySQL | 5.7 | Hive元数据存储 |
 | Docker | latest | 容器化部署 |

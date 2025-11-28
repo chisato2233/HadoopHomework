@@ -9,7 +9,7 @@ LABEL description="Hadoop Ecosystem Base Image"
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 设置环境变量
-ENV JAVA_HOME=/usr/local/jdk1.8.0_381
+ENV JAVA_HOME=/usr/local/jdk8u392-b08
 ENV HADOOP_HOME=/usr/local/hadoop
 ENV ZOOKEEPER_HOME=/usr/local/zookeeper
 ENV HBASE_HOME=/usr/local/hbase
@@ -52,29 +52,35 @@ RUN mkdir -p /usr/local/src /data/hadoop/tmp /data/hadoop/name /data/hadoop/data
     /data/zookeeper/data /data/zookeeper/logs /data/hbase
 
 # 复制安装包（需要提前下载到 packages 目录）
-COPY packages/jdk-8u381-linux-x64.tar.gz /usr/local/src/
+# 使用新版本：Adoptium OpenJDK 8, ZooKeeper 3.8.4, HBase 2.5.7
+COPY packages/OpenJDK8U-jdk_x64_linux_hotspot_8u392b08.tar.gz /usr/local/src/
 COPY packages/hadoop-3.3.6.tar.gz /usr/local/src/
-COPY packages/apache-zookeeper-3.6.4-bin.tar.gz /usr/local/src/
-COPY packages/hbase-2.4.17-bin.tar.gz /usr/local/src/
+COPY packages/apache-zookeeper-3.8.4-bin.tar.gz /usr/local/src/
+COPY packages/hbase-2.5.7-bin.tar.gz /usr/local/src/
 
 # 解压并安装
 RUN cd /usr/local/src && \
-    tar -zxf jdk-8u381-linux-x64.tar.gz -C /usr/local/ && \
+    # JDK (Adoptium OpenJDK 8)
+    tar -zxf OpenJDK8U-jdk_x64_linux_hotspot_8u392b08.tar.gz -C /usr/local/ && \
+    # Hadoop
     tar -zxf hadoop-3.3.6.tar.gz -C /usr/local/ && \
     mv /usr/local/hadoop-3.3.6 /usr/local/hadoop && \
-    tar -zxf apache-zookeeper-3.6.4-bin.tar.gz -C /usr/local/ && \
-    mv /usr/local/apache-zookeeper-3.6.4-bin /usr/local/zookeeper && \
-    tar -zxf hbase-2.4.17-bin.tar.gz -C /usr/local/ && \
-    mv /usr/local/hbase-2.4.17 /usr/local/hbase && \
+    # ZooKeeper
+    tar -zxf apache-zookeeper-3.8.4-bin.tar.gz -C /usr/local/ && \
+    mv /usr/local/apache-zookeeper-3.8.4-bin /usr/local/zookeeper && \
+    # HBase
+    tar -zxf hbase-2.5.7-bin.tar.gz -C /usr/local/ && \
+    mv /usr/local/hbase-2.5.7 /usr/local/hbase && \
+    # 清理
     rm -rf /usr/local/src/*
 
 # 配置环境变量
-RUN echo 'export JAVA_HOME=/usr/local/jdk1.8.0_381' >> /etc/profile && \
+RUN echo "export JAVA_HOME=$JAVA_HOME" >> /etc/profile && \
     echo 'export HADOOP_HOME=/usr/local/hadoop' >> /etc/profile && \
     echo 'export ZOOKEEPER_HOME=/usr/local/zookeeper' >> /etc/profile && \
     echo 'export HBASE_HOME=/usr/local/hbase' >> /etc/profile && \
     echo 'export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$ZOOKEEPER_HOME/bin:$HBASE_HOME/bin' >> /etc/profile && \
-    echo 'export JAVA_HOME=/usr/local/jdk1.8.0_381' >> ~/.bashrc && \
+    echo "export JAVA_HOME=$JAVA_HOME" >> ~/.bashrc && \
     echo 'export HADOOP_HOME=/usr/local/hadoop' >> ~/.bashrc && \
     echo 'export ZOOKEEPER_HOME=/usr/local/zookeeper' >> ~/.bashrc && \
     echo 'export HBASE_HOME=/usr/local/hbase' >> ~/.bashrc && \
