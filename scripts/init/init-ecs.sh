@@ -102,18 +102,16 @@ install_docker() {
 
 # 配置Docker镜像加速
 configure_docker_mirror() {
-    log_info "配置Docker镜像加速..."
+    log_info "配置Docker..."
     
     mkdir -p /etc/docker
     
+    # 阿里云ECS内网访问Docker Hub速度较快，不配置镜像加速器
+    # 如果需要镜像加速，请登录阿里云容器镜像服务获取个人加速地址:
+    # https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
+    
     cat > /etc/docker/daemon.json <<EOF
 {
-    "registry-mirrors": [
-        "https://docker.mirrors.ustc.edu.cn",
-        "https://hub-mirror.c.163.com",
-        "https://mirror.baidubce.com",
-        "https://registry.docker-cn.com"
-    ],
     "exec-opts": ["native.cgroupdriver=systemd"],
     "log-driver": "json-file",
     "log-opts": {
@@ -128,7 +126,8 @@ EOF
     systemctl daemon-reload
     systemctl restart docker
     
-    log_info "Docker镜像加速配置完成"
+    log_info "Docker配置完成"
+    log_info "提示: 如需配置镜像加速，请访问 https://cr.console.aliyun.com 获取加速地址"
 }
 
 # 配置防火墙
