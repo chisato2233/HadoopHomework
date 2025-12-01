@@ -1,0 +1,76 @@
+# ============================================
+# HBase Shell 命令
+# 电商用户行为数据存储
+# ============================================
+# 进入方式: docker exec -it hadoop1 hbase shell
+# ============================================
+
+# ==================== 建表 ====================
+
+# 创建用户行为表（单列族，预分区）
+create 'user_behavior', {NAME => 'info', VERSIONS => 1}, SPLITS => ['3', '5', '7']
+
+# 查看表结构
+describe 'user_behavior'
+
+# 列出所有表
+list
+
+# ==================== 插入数据 ====================
+# RowKey设计: user_id|reverse_timestamp（时间戳倒序）
+
+put 'user_behavior', '1001|9999999999999998', 'info:product_id', 'P001'
+put 'user_behavior', '1001|9999999999999998', 'info:action_type', 'click'
+put 'user_behavior', '1001|9999999999999998', 'info:duration', '5'
+put 'user_behavior', '1001|9999999999999998', 'info:event_time', '2024-12-01 10:00:01'
+
+put 'user_behavior', '1001|9999999999999997', 'info:product_id', 'P001'
+put 'user_behavior', '1001|9999999999999997', 'info:action_type', 'browse'
+put 'user_behavior', '1001|9999999999999997', 'info:duration', '120'
+
+put 'user_behavior', '1002|9999999999999996', 'info:product_id', 'P002'
+put 'user_behavior', '1002|9999999999999996', 'info:action_type', 'click'
+put 'user_behavior', '1002|9999999999999996', 'info:duration', '3'
+
+put 'user_behavior', '1003|9999999999999995', 'info:product_id', 'P001'
+put 'user_behavior', '1003|9999999999999995', 'info:action_type', 'order'
+put 'user_behavior', '1003|9999999999999995', 'info:duration', '5'
+
+# ==================== 查询数据 ====================
+
+# 扫描全表
+scan 'user_behavior'
+
+# 限制返回行数
+scan 'user_behavior', {LIMIT => 5}
+
+# 查询单行
+get 'user_behavior', '1001|9999999999999998'
+
+# 前缀扫描（查询指定用户）
+scan 'user_behavior', {ROWPREFIXFILTER => '1001'}
+
+# 只返回特定列
+scan 'user_behavior', {COLUMNS => ['info:action_type', 'info:product_id']}
+
+# 统计行数
+count 'user_behavior'
+
+# ==================== 表管理 ====================
+
+# 禁用表
+# disable 'user_behavior'
+
+# 启用表
+# enable 'user_behavior'
+
+# 删除表（需先禁用）
+# disable 'user_behavior'
+# drop 'user_behavior'
+
+# 清空表数据
+# truncate 'user_behavior'
+
+# ==================== 退出 ====================
+exit
+
