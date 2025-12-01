@@ -20,8 +20,20 @@ public class LogCleanDriver extends Configured implements Tool {
 
     @Override
     public int run(String[] args) throws Exception {
-        if (args.length != 2) {
+        // 处理参数：可能包含类名作为第一个参数
+        String inputPath;
+        String outputPath;
+
+        if (args.length == 2) {
+            inputPath = args[0];
+            outputPath = args[1];
+        } else if (args.length == 3 && args[0].contains("LogCleanDriver")) {
+            // 跳过类名参数
+            inputPath = args[1];
+            outputPath = args[2];
+        } else {
             System.err.println("Usage: LogCleanDriver <input path> <output path>");
+            System.err.println("Received " + args.length + " arguments");
             return -1;
         }
 
@@ -37,8 +49,8 @@ public class LogCleanDriver extends Configured implements Tool {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(NullWritable.class);
 
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        FileInputFormat.addInputPath(job, new Path(inputPath));
+        FileOutputFormat.setOutputPath(job, new Path(outputPath));
 
         return job.waitForCompletion(true) ? 0 : 1;
     }
