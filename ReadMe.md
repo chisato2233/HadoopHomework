@@ -7,32 +7,32 @@
 ## 🏗️ 集群架构
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    本地 Docker 网络 (172.18.0.0/24)              │
-├─────────────────┬─────────────────┬─────────────────────────────┤
-│    hadoop1      │     hadoop2     │          hadoop3            │
-│   172.18.0.2    │   172.18.0.3    │        172.18.0.4           │
-│    (master)     │    (slave1)     │         (slave2)            │
-│                 │                 │                             │
-│ NameNode        │ DataNode        │ DataNode                    │
-│ ResourceManager │ NodeManager     │ NodeManager                 │
-│ ZooKeeper       │ ZooKeeper       │ ZooKeeper                   │
-│ HBase Master    │ RegionServer    │ RegionServer                │
-│ HiveServer2     │                 │                             │
-│ MySQL(元数据)    │                 │                             │
-└─────────────────┴─────────────────┴─────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────┐
+│                  本地 Docker 网络 (172.18.0.0/24)                      │
+├────────────────┬────────────────┬────────────────┬────────────────────┤
+│    hadoop1     │    hadoop2     │    hadoop3     │   mysql + hue      │
+│  172.18.0.2    │  172.18.0.3    │  172.18.0.4    │ .10 / .20          │
+│   (master)     │   (slave1)     │   (slave2)     │                    │
+│                │                │                │                    │
+│ NameNode       │ DataNode       │ DataNode       │ MySQL 5.7          │
+│ ResourceManager│ NodeManager    │ NodeManager    │ (Hive Metastore)   │
+│ ZooKeeper      │ ZooKeeper      │ ZooKeeper      │                    │
+│ HBase Master   │ RegionServer   │ RegionServer   │ Hue 4.11           │
+│ HiveServer2    │                │                │ (Web管理界面)       │
+└────────────────┴────────────────┴────────────────┴────────────────────┘
 ```
 
 ## 🛠️ 技术栈
 
 | 组件 | 版本 | 用途 |
 |------|------|------|
-| JDK | Adoptium OpenJDK 8u392 | Java运行环境 |
+| OpenJDK | 8 | Java 运行环境 |
 | Hadoop | 3.3.6 | 分布式存储与计算 |
 | ZooKeeper | 3.8.4 | 分布式协调服务 |
 | HBase | 2.5.7 | 列式数据库 |
 | Hive | 3.1.3 | 数据仓库 |
-| MySQL | 5.7 | Hive元数据存储 |
+| MySQL | 5.7 | Hive/Hue 元数据存储 |
+| Hue | 4.11.0 | Web 管理界面 |
 | Docker | latest | 容器化部署 |
 
 ## 📁 目录结构
@@ -40,28 +40,27 @@
 ```
 HadoopHomework/
 ├── docker/                    # Docker 配置
-│   ├── base/                  # 基础镜像 Dockerfile
+│   ├── base/                  # 基础镜像
 │   │   ├── Dockerfile
 │   │   └── scripts/
-│   │       └── entrypoint.sh
-│   └── compose/               # Docker Compose 配置
-│       └── docker-compose.yml
-├── config/                    # Hadoop生态配置文件
+│   │       └── entrypoint.sh  # 容器启动脚本
+│   └── compose/               
+│       └── docker-compose.yml # 集群编排配置
+├── config/                    # Hadoop 生态配置文件
 │   ├── hadoop/                # core-site, hdfs-site, yarn-site
 │   ├── zookeeper/             # zoo.cfg
 │   ├── hbase/                 # hbase-site.xml
-│   └── hive/                  # hive-site.xml
-├── scripts/                   # 部署脚本 (PowerShell)
+│   ├── hive/                  # hive-site.xml
+│   └── hue/                   # hue.ini
+├── scripts/                   # 部署脚本
 │   └── deploy/
-│       ├── build-image.ps1    # 构建Docker镜像
+│       ├── build-image.ps1    # 构建 Docker 镜像
 │       ├── start-cluster.ps1  # 启动集群
 │       └── stop-cluster.ps1   # 停止集群
 ├── mapreduce/                 # MapReduce 程序
 ├── data/                      # 测试数据
-│   └── sample-logs/
 ├── hql/                       # Hive SQL 脚本
-├── docs/                      # 项目文档
-└── visualization/             # 可视化
+└── docs/                      # 项目文档
 ```
 
 ## 🚀 快速开始
@@ -73,33 +72,25 @@ HadoopHomework/
 - 内存建议 **16GB+**（集群运行需要较大内存）
 - 磁盘空间 **20GB+**
 
-### 1. 构建 Docker 镜像
-
-在 PowerShell 中执行：
+### 一键部署（3步）
 
 ```powershell
-# 进入项目目录
+# 1. 进入项目目录
 cd D:\Code\MyCode\HadoopHomework
 
-# 构建镜像
+# 2. 构建镜像（首次约10-15分钟）
 .\scripts\deploy\build-image.ps1
-```
 
-> ⏱️ 首次构建需要下载约 2GB 文件，请确保网络畅通
-
-如果遇到脚本执行策略问题：
-```powershell
-# 临时允许执行脚本
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
-```
-
-### 2. 启动集群
-
-```powershell
+# 3. 启动集群（约2分钟）
 .\scripts\deploy\start-cluster.ps1
 ```
 
-### 3. 停止集群
+> ⚠️ 如果遇到脚本执行策略问题：
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+> ```
+
+### 停止集群
 
 ```powershell
 # 停止集群（保留数据）
@@ -109,84 +100,130 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 .\scripts\deploy\stop-cluster.ps1 -Clean
 ```
 
-## 👥 Docker 容器角色分配
-
-| 容器名 | 容器IP | 角色 |
-|--------|--------|------|
-| hadoop1 | 172.18.0.2 | NameNode, ResourceManager, ZK, HMaster, Hive |
-| hadoop2 | 172.18.0.3 | DataNode, NodeManager, ZK, RegionServer |
-| hadoop3 | 172.18.0.4 | DataNode, NodeManager, ZK, RegionServer |
-| mysql-hive | 172.18.0.10 | Hive Metastore 数据库 |
-
 ## 📊 Web UI 访问
 
-集群启动后，可以通过以下地址访问各服务的 Web UI：
+集群启动后，访问以下地址：
 
-| 服务 | 端口 | 地址 |
+| 服务 | 地址 | 说明 |
 |------|------|------|
-| HDFS NameNode | 9870 | http://localhost:9870 |
-| YARN ResourceManager | 8088 | http://localhost:8088 |
-| HBase Master | 16010 | http://localhost:16010 |
-| Hive WebUI | 10002 | http://localhost:10002 |
-| MapReduce JobHistory | 19888 | http://localhost:19888 |
+| **Hue** | http://localhost:8888 | 📌 推荐！统一管理界面 |
+| HDFS NameNode | http://localhost:9870 | 文件系统状态 |
+| YARN ResourceManager | http://localhost:8088 | 任务调度状态 |
+| HBase Master | http://localhost:16010 | HBase 状态 |
+| JobHistory | http://localhost:19888 | 历史任务 |
+
+### Hue 首次登录
+
+首次访问 Hue 会要求创建管理员账户，直接设置用户名和密码即可。
+
+## 👥 容器角色分配
+
+| 容器名 | IP 地址 | 角色 |
+|--------|---------|------|
+| hadoop1 | 172.18.0.2 | NameNode, ResourceManager, ZK, HMaster, HiveServer2 |
+| hadoop2 | 172.18.0.3 | DataNode, NodeManager, ZK, RegionServer |
+| hadoop3 | 172.18.0.4 | DataNode, NodeManager, ZK, RegionServer |
+| mysql-hive | 172.18.0.10 | Hive Metastore + Hue 数据库 |
+| hue | 172.18.0.20 | Web 管理界面 |
 
 ## 🔧 常用命令
 
 ### 进入容器
 
 ```powershell
-# 进入主节点
-docker exec -it hadoop1 bash
-
-# 进入从节点
-docker exec -it hadoop2 bash
-docker exec -it hadoop3 bash
+docker exec -it hadoop1 bash    # 主节点
+docker exec -it hadoop2 bash    # 从节点1
+docker exec -it hadoop3 bash    # 从节点2
 ```
 
 ### 查看集群状态
 
 ```bash
-# 进入hadoop1容器后执行
+# 在 hadoop1 容器内执行
 
-# 查看HDFS状态
+# 查看所有 Java 进程
+jps
+
+# 查看 HDFS 状态
 hdfs dfsadmin -report
 
-# 查看YARN节点
+# 查看 YARN 节点
 yarn node -list
 
-# 查看ZooKeeper状态
+# 查看 ZooKeeper 状态
 zkServer.sh status
 
-# 查看HBase状态
-echo "status" | hbase shell
+# 查看 HBase 状态
+echo "status" | hbase shell -n
 ```
 
 ### HDFS 基础操作
 
 ```bash
-# 上传文件到HDFS
-hdfs dfs -put local_file /user/hadoop/
+# 查看 HDFS 目录
+hdfs dfs -ls /
 
-# 查看HDFS目录
-hdfs dfs -ls /user/hadoop/
+# 创建目录
+hdfs dfs -mkdir -p /user/hadoop/input
+
+# 上传文件
+hdfs dfs -put local_file /user/hadoop/input/
 
 # 下载文件
-hdfs dfs -get /user/hadoop/file local_path
+hdfs dfs -get /user/hadoop/output/result local_path
 ```
 
-### 运行 MapReduce 任务
+### Hive 操作
 
 ```bash
-# 运行WordCount示例
-hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar wordcount /input /output
+# 进入 Hive CLI
+hive
+
+# 或使用 beeline 连接
+beeline -u jdbc:hive2://localhost:10000
 ```
 
-## ⚠️ 注意事项
+### 运行 MapReduce 示例
 
-1. **内存需求**：集群运行需要较大内存，建议在 Docker Desktop 设置中分配至少 12GB
-2. **首次启动**：首次启动会自动格式化 HDFS，后续启动会保留数据
-3. **端口占用**：确保本地端口 9870、8088、16010、10002、3306 等未被占用
-4. **脚本执行策略**：如遇到 PowerShell 脚本无法执行，使用 `Set-ExecutionPolicy Bypass -Scope Process`
+```bash
+# WordCount 示例
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar \
+    wordcount /input /output
+```
+
+## ⚠️ 常见问题
+
+### 1. 内存不足
+
+集群运行需要较大内存，建议在 Docker Desktop 设置中分配至少 **12GB**。
+
+### 2. 端口被占用
+
+确保以下端口未被占用：
+- 8888 (Hue)
+- 9870 (HDFS)
+- 8088 (YARN)
+- 16010 (HBase)
+- 3307 (MySQL，已避开默认3306)
+
+### 3. 服务启动失败
+
+```powershell
+# 查看容器日志
+docker logs hadoop1
+
+# 重启集群
+.\scripts\deploy\stop-cluster.ps1
+.\scripts\deploy\start-cluster.ps1
+```
+
+### 4. 完全重置
+
+```powershell
+# 清理所有数据重新开始
+.\scripts\deploy\stop-cluster.ps1 -Clean -Force
+.\scripts\deploy\start-cluster.ps1
+```
 
 ## 📝 License
 

@@ -10,22 +10,22 @@
         <value>hdfs://hadoop1:9000</value>
         <description>HDFS的URI，主机名需要在/etc/hosts中配置</description>
     </property>
-    
+
     <!-- Hadoop临时目录 -->
     <property>
         <name>hadoop.tmp.dir</name>
         <value>/data/hadoop/tmp</value>
         <description>Hadoop临时文件存储目录</description>
     </property>
-    
+
     <!-- ZooKeeper连接地址 -->
     <property>
         <name>ha.zookeeper.quorum</name>
         <value>hadoop1:2181,hadoop2:2181,hadoop3:2181</value>
         <description>ZooKeeper集群地址，用于HA自动故障转移</description>
     </property>
-    
-    <!-- 代理用户配置（Hive需要） -->
+
+    <!-- 代理用户配置（Hive/Hue需要） -->
     <property>
         <name>hadoop.proxyuser.root.hosts</name>
         <value>*</value>
@@ -34,7 +34,31 @@
         <name>hadoop.proxyuser.root.groups</name>
         <value>*</value>
     </property>
-    
+    <property>
+        <name>hadoop.proxyuser.hue.hosts</name>
+        <value>*</value>
+    </property>
+    <property>
+        <name>hadoop.proxyuser.hue.groups</name>
+        <value>*</value>
+    </property>
+    <property>
+        <name>hadoop.proxyuser.admin.hosts</name>
+        <value>*</value>
+    </property>
+    <property>
+        <name>hadoop.proxyuser.admin.groups</name>
+        <value>*</value>
+    </property>
+    <property>
+        <name>hadoop.proxyuser.hive.hosts</name>
+        <value>*</value>
+    </property>
+    <property>
+        <name>hadoop.proxyuser.hive.groups</name>
+        <value>*</value>
+    </property>
+
     <!-- 文件缓冲区大小 -->
     <property>
         <name>io.file.buffer.size</name>

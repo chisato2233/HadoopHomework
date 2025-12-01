@@ -1,5 +1,5 @@
 # Hadoop生态基础镜像 (Ubuntu 22.04)
-# 包含 JDK + Hadoop + ZooKeeper + HBase
+# 包含 JDK + Hadoop + ZooKeeper + HBase + Hive
 FROM ubuntu:22.04
 
 LABEL maintainer="hadoop-homework"
@@ -14,6 +14,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV HADOOP_VERSION=3.3.6
 ENV ZOOKEEPER_VERSION=3.8.4
 ENV HBASE_VERSION=2.5.7
+ENV HIVE_VERSION=3.1.3
 
 # 设置环境变量
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
@@ -103,22 +104,40 @@ RUN cd /usr/local/src && \
     echo ">>> HBase installed"
 
 # ============================================
-# 第七阶段：配置环境变量
+# 第七阶段：下载并安装 Hive
+# ============================================
+RUN cd /usr/local/src && \
+    echo ">>> Downloading Hive ${HIVE_VERSION}..." && \
+    wget -q --show-progress \
+        "https://archive.apache.org/dist/hive/hive-${HIVE_VERSION}/apache-hive-${HIVE_VERSION}-bin.tar.gz" \
+        -O hive.tar.gz && \
+    tar -zxf hive.tar.gz -C /usr/local/ && \
+    mv /usr/local/apache-hive-${HIVE_VERSION}-bin /usr/local/hive && \
+    rm hive.tar.gz && \
+    # 下载 MySQL JDBC 驱动
+    wget -q "https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar" \
+        -O /usr/local/hive/lib/mysql-connector-java-8.0.28.jar && \
+    echo ">>> Hive installed"
+
+# ============================================
+# 第八阶段：配置环境变量
 # ============================================
 RUN echo "export JAVA_HOME=$JAVA_HOME" >> /etc/profile && \
     echo 'export HADOOP_HOME=/usr/local/hadoop' >> /etc/profile && \
     echo 'export ZOOKEEPER_HOME=/usr/local/zookeeper' >> /etc/profile && \
     echo 'export HBASE_HOME=/usr/local/hbase' >> /etc/profile && \
-    echo 'export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$ZOOKEEPER_HOME/bin:$HBASE_HOME/bin' >> /etc/profile && \
+    echo 'export HIVE_HOME=/usr/local/hive' >> /etc/profile && \
+    echo 'export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$ZOOKEEPER_HOME/bin:$HBASE_HOME/bin:$HIVE_HOME/bin' >> /etc/profile && \
     # 同样配置到 bashrc
     echo "export JAVA_HOME=$JAVA_HOME" >> ~/.bashrc && \
     echo 'export HADOOP_HOME=/usr/local/hadoop' >> ~/.bashrc && \
     echo 'export ZOOKEEPER_HOME=/usr/local/zookeeper' >> ~/.bashrc && \
     echo 'export HBASE_HOME=/usr/local/hbase' >> ~/.bashrc && \
-    echo 'export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$ZOOKEEPER_HOME/bin:$HBASE_HOME/bin' >> ~/.bashrc
+    echo 'export HIVE_HOME=/usr/local/hive' >> ~/.bashrc && \
+    echo 'export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$ZOOKEEPER_HOME/bin:$HBASE_HOME/bin:$HIVE_HOME/bin' >> ~/.bashrc
 
 # ============================================
-# 第八阶段：配置Hadoop
+# 第九阶段：配置Hadoop
 # ============================================
 RUN echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
     echo "export HDFS_NAMENODE_USER=root" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
@@ -128,10 +147,17 @@ RUN echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh 
     echo "export YARN_NODEMANAGER_USER=root" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 
 # ============================================
-# 第九阶段：配置HBase
+# 第十阶段：配置HBase
 # ============================================
 RUN echo "export JAVA_HOME=$JAVA_HOME" >> $HBASE_HOME/conf/hbase-env.sh && \
     echo "export HBASE_MANAGES_ZK=false" >> $HBASE_HOME/conf/hbase-env.sh
+
+# ============================================
+# 第十一阶段：配置Hive
+# ============================================
+RUN echo "export JAVA_HOME=$JAVA_HOME" >> $HIVE_HOME/conf/hive-env.sh && \
+    echo "export HADOOP_HOME=$HADOOP_HOME" >> $HIVE_HOME/conf/hive-env.sh && \
+    echo "export HIVE_CONF_DIR=$HIVE_HOME/conf" >> $HIVE_HOME/conf/hive-env.sh
 
 # ============================================
 # 暴露端口
@@ -141,7 +167,8 @@ RUN echo "export JAVA_HOME=$JAVA_HOME" >> $HBASE_HOME/conf/hbase-env.sh && \
 # YARN: 8088(ResourceManager UI), 8042(NodeManager)
 # ZooKeeper: 2181(client), 2888(follower), 3888(election)
 # HBase: 16000(Master), 16010(Master UI), 16020(RegionServer), 16030(RegionServer UI)
-EXPOSE 22 2181 2888 3888 8088 8042 9000 9864 9870 16000 16010 16020 16030
+# Hive: 10000(HiveServer2), 10002(Hive WebUI), 9083(Metastore)
+EXPOSE 22 2181 2888 3888 8088 8042 9000 9864 9870 16000 16010 16020 16030 10000 10002 9083
 
 # 启动脚本
 COPY scripts/entrypoint.sh /entrypoint.sh

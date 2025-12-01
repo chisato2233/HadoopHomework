@@ -38,10 +38,13 @@ services:
     volumes:
       # 持久化数据
       - hadoop1-data:/data
+      # 启动脚本
+      - ../../docker/base/scripts/entrypoint.sh:/entrypoint.sh
       # 配置文件（相对于docker-compose.yml的位置）
       - ../../config/hadoop:/usr/local/hadoop/etc/hadoop
       - ../../config/zookeeper/zoo.cfg:/usr/local/zookeeper/conf/zoo.cfg
       - ../../config/hbase:/usr/local/hbase/conf
+      - ../../config/hive/hive-site.xml:/usr/local/hive/conf/hive-site.xml
       # 项目代码和数据
       - ../../mapreduce:/opt/mapreduce
       - ../../data:/opt/data
@@ -81,6 +84,7 @@ services:
       - NODE_ID=2
     volumes:
       - hadoop2-data:/data
+      - ../../docker/base/scripts/entrypoint.sh:/entrypoint.sh
       - ../../config/hadoop:/usr/local/hadoop/etc/hadoop
       - ../../config/zookeeper/zoo.cfg:/usr/local/zookeeper/conf/zoo.cfg
       - ../../config/hbase:/usr/local/hbase/conf
@@ -117,6 +121,7 @@ services:
       - NODE_ID=3
     volumes:
       - hadoop3-data:/data
+      - ../../docker/base/scripts/entrypoint.sh:/entrypoint.sh
       - ../../config/hadoop:/usr/local/hadoop/etc/hadoop
       - ../../config/zookeeper/zoo.cfg:/usr/local/zookeeper/conf/zoo.cfg
       - ../../config/hbase:/usr/local/hbase/conf
@@ -137,7 +142,7 @@ services:
       hadoop-net:
         ipv4_address: 172.18.0.10
     ports:
-      - "3306:3306"
+      - "3307:3306"   # 映射到3307避免与本地MySQL冲突
     environment:
       MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: hive_metastore
@@ -147,6 +152,30 @@ services:
       - mysql-data:/var/lib/mysql
     restart: unless-stopped
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # ========================================
+  # Hue - Hadoop Web管理界面
+  # ========================================
+  hue:
+    image: gethue/hue:4.11.0
+    container_name: hue
+    hostname: hue
+    networks:
+      hadoop-net:
+        ipv4_address: 172.18.0.20
+    ports:
+      - "8888:8888"     # Hue Web UI
+    volumes:
+      - ../../config/hue/hue.ini:/usr/share/hue/desktop/conf/z-hue.ini
+    extra_hosts:
+      - "hadoop1:172.18.0.2"
+      - "hadoop2:172.18.0.3"
+      - "hadoop3:172.18.0.4"
+      - "mysql:172.18.0.10"
+    depends_on:
+      - hadoop1
+      - mysql
+    restart: unless-stopped
 
 # ========================================
 # 网络配置
