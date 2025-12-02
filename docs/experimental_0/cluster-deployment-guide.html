@@ -1,0 +1,1185 @@
+<!DOCTYPE html><html><head>
+      <title>cluster-deployment-guide</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\32212\.cursor\extensions\shd101wyy.markdown-preview-enhanced-0.8.20-universal\crossnote\dependencies\katex\katex.min.css">
+      
+      
+      <script type="text/javascript" src="file:///c:\Users\32212\.cursor\extensions\shd101wyy.markdown-preview-enhanced-0.8.20-universal\crossnote\dependencies\mermaid\mermaid.min.js" charset="UTF-8"></script>
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <!-- The content below will be included at the end of the <head> element. --><script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script></head><body for="html-export">
+    
+    
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="大数据集群部署与运维技术文档">大数据集群部署与运维技术文档 </h1>
+<hr>
+<h1 id="项目概述">项目概述 </h1>
+<p>本项目为"电商用户行为全链路分析平台综合实践项目"，执行周期为2周（10个工作日）。项目成功完成了从基础环境搭建到大数据平台完整部署的全流程实施，构建了基于3节点高可用架构的大数据处理平台。</p>
+<hr>
+<h1 id="技术成果总结">技术成果总结： </h1>
+<ul>
+<li>成功部署ZooKeeper集群并验证选举机制</li>
+<li>搭建Hadoop HA集群（HDFS+YARN）并完成故障转移测试</li>
+<li>部署HBase分布式数据库集群并设计用户行为数据表结构</li>
+<li>集成Hive数据仓库并实现跨组件数据流转</li>
+<li>建立基础监控体系并完成故障模拟处理</li>
+</ul>
+<hr>
+<h1 id="实现细节及步骤">实现细节及步骤 </h1>
+<h2 id="1-集群架构设计">1. 集群架构设计 </h2>
+<h3 id="11-整体架构图">1.1 整体架构图 </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>+--------------------------------------------------------------------+
+|                    本地 Docker 网络 (172.18.0.0/24)                 |
++------------------+------------------+------------------+-----------+
+|     hadoop1      |     hadoop2      |     hadoop3      |  mysql    |
+|   172.18.0.2     |   172.18.0.3     |   172.18.0.4     |172.18.0.10|
+|    (Master)      |    (Slave1)      |    (Slave2)      |           |
++------------------+------------------+------------------+-----------+
+| - NameNode       | - DataNode       | - DataNode       | MySQL5.7  |
+| - ResourceManager| - NodeManager    | - NodeManager    | Hive      |
+| - ZooKeeper      | - ZooKeeper      | - ZooKeeper      | Metastore |
+| - HBase Master   | - RegionServer   | - RegionServer   |           |
+| - HiveServer2    |                  |                  |           |
+| - JobHistory     |                  |                  |           |
++------------------+------------------+------------------+-----------+
+</code></pre><div class="mermaid">graph TB
+    subgraph DockerNetwork["Docker Network: 172.18.0.0/24"]
+        subgraph Master["hadoop1 - Master - 172.18.0.2"]
+            NN[NameNode]
+            RM[ResourceManager]
+            ZK1[ZooKeeper]
+            HM[HBase Master]
+            HS2[HiveServer2]
+            JH[JobHistoryServer]
+        end
+        
+        subgraph Slave1["hadoop2 - Slave1 - 172.18.0.3"]
+            DN1[DataNode]
+            NM1[NodeManager]
+            ZK2[ZooKeeper]
+            RS1[RegionServer]
+        end
+        
+        subgraph Slave2["hadoop3 - Slave2 - 172.18.0.4"]
+            DN2[DataNode]
+            NM2[NodeManager]
+            ZK3[ZooKeeper]
+            RS2[RegionServer]
+        end
+        
+        subgraph Database["mysql - 172.18.0.10"]
+            MySQL[(MySQL 5.7)]
+            HiveMeta[Hive Metastore]
+        end
+    end
+    
+    NN --&gt; DN1
+    NN --&gt; DN2
+    RM --&gt; NM1
+    RM --&gt; NM2
+    HM --&gt; RS1
+    HM --&gt; RS2
+    HS2 --&gt; MySQL
+    ZK1 &lt;--&gt; ZK2
+    ZK2 &lt;--&gt; ZK3
+    ZK1 &lt;--&gt; ZK3
+</div><h3 id="12-节点角色分配表">1.2 节点角色分配表 </h3>
+<table>
+<thead>
+<tr>
+<th>节点名称</th>
+<th>IP地址</th>
+<th>角色</th>
+<th>部署组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hadoop1</td>
+<td>172.18.0.2</td>
+<td>Master</td>
+<td>NameNode, ResourceManager, ZooKeeper, HBase Master, HiveServer2, JobHistoryServer</td>
+</tr>
+<tr>
+<td>hadoop2</td>
+<td>172.18.0.3</td>
+<td>Slave</td>
+<td>DataNode, NodeManager, ZooKeeper, HBase RegionServer</td>
+</tr>
+<tr>
+<td>hadoop3</td>
+<td>172.18.0.4</td>
+<td>Slave</td>
+<td>DataNode, NodeManager, ZooKeeper, HBase RegionServer</td>
+</tr>
+<tr>
+<td>mysql</td>
+<td>172.18.0.10</td>
+<td>数据库</td>
+<td>MySQL 5.7 (Hive Metastore)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13-端口规划表">1.3 端口规划表 </h3>
+<table>
+<thead>
+<tr>
+<th>服务</th>
+<th>端口</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HDFS NameNode</td>
+<td>9870</td>
+<td>Web UI</td>
+</tr>
+<tr>
+<td>HDFS NameNode</td>
+<td>9000</td>
+<td>RPC通信</td>
+</tr>
+<tr>
+<td>YARN ResourceManager</td>
+<td>8088</td>
+<td>Web UI</td>
+</tr>
+<tr>
+<td>ZooKeeper</td>
+<td>2181</td>
+<td>客户端连接</td>
+</tr>
+<tr>
+<td>ZooKeeper</td>
+<td>2888</td>
+<td>Follower通信</td>
+</tr>
+<tr>
+<td>ZooKeeper</td>
+<td>3888</td>
+<td>Leader选举</td>
+</tr>
+<tr>
+<td>HBase Master</td>
+<td>16010</td>
+<td>Web UI</td>
+</tr>
+<tr>
+<td>HBase RegionServer</td>
+<td>16030</td>
+<td>Web UI</td>
+</tr>
+<tr>
+<td>HiveServer2</td>
+<td>10000</td>
+<td>JDBC连接</td>
+</tr>
+<tr>
+<td>JobHistoryServer</td>
+<td>19888</td>
+<td>Web UI</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>3306</td>
+<td>数据库连接</td>
+</tr>
+</tbody>
+</table>
+<p>[截图占位符-1: 集群架构图]</p>
+<blockquote>
+<p>提示: 可使用draw.io或Visio绘制架构图，保存为PNG格式插入此处</p>
+</blockquote>
+<hr>
+<h2 id="2-环境准备">2. 环境准备 </h2>
+<h3 id="21-基础环境配置">2.1 基础环境配置 </h3>
+<p>本项目采用Docker容器化部署，基于Ubuntu 22.04镜像构建。</p>
+<h4 id="211-软件版本信息">2.1.1 软件版本信息 </h4>
+<table>
+<thead>
+<tr>
+<th>软件</th>
+<th>版本</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Docker Desktop</td>
+<td>latest</td>
+<td>容器运行环境</td>
+</tr>
+<tr>
+<td>OpenJDK</td>
+<td>8</td>
+<td>Java运行环境</td>
+</tr>
+<tr>
+<td>Hadoop</td>
+<td>3.3.6</td>
+<td>分布式计算框架</td>
+</tr>
+<tr>
+<td>ZooKeeper</td>
+<td>3.8.4</td>
+<td>分布式协调服务</td>
+</tr>
+<tr>
+<td>HBase</td>
+<td>2.5.7</td>
+<td>列式数据库</td>
+</tr>
+<tr>
+<td>Hive</td>
+<td>3.1.3</td>
+<td>数据仓库</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>5.7</td>
+<td>元数据存储</td>
+</tr>
+</tbody>
+</table>
+<h4 id="212-jdk环境配置">2.1.2 JDK环境配置 </h4>
+<p>JDK安装路径: <code>/usr/lib/jvm/java-8-openjdk-amd64</code></p>
+<p>环境变量配置 (<code>/etc/profile</code>):</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">JAVA_HOME</span><span class="token operator">=</span>/usr/lib/jvm/java-8-openjdk-amd64
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token variable">$JAVA_HOME</span>/bin
+</code></pre><p>验证命令:<br>
+在 hadoop1 中输入 <code>java -version</code></p>
+<p><img src="image/cluster-deployment-guide/1764660393851.png" alt="1764660393851"></p>
+<h3 id="22-网络配置">2.2 网络配置 </h3>
+<h4 id="221-docker网络配置">2.2.1 Docker网络配置 </h4>
+<p>网络名称: <code>compose_hadoop-net</code><br>
+网络类型: bridge<br>
+子网范围: 172.18.0.0/24</p>
+<h4 id="222-主机名解析配置">2.2.2 主机名解析配置 </h4>
+<p>各节点 <code>/etc/hosts</code> 配置:</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>172.18.0.2  hadoop1
+172.18.0.3  hadoop2
+172.18.0.4  hadoop3
+172.18.0.10 mysql
+</code></pre><p>验证网络连通性:</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 在hadoop1上测试</span>
+<span class="token function">ping</span> hadoop2
+<span class="token function">ping</span> hadoop3
+</code></pre><p><img src="image/cluster-deployment-guide/1764661003695.png" alt="1764661003695"></p>
+<p><img src="image/cluster-deployment-guide/1764661022093.png" alt="1764661022093"></p>
+<h3 id="23-ssh免密登录配置">2.3 SSH免密登录配置 </h3>
+<h4 id="231-配置步骤">2.3.1 配置步骤 </h4>
+<ol>
+<li>生成SSH密钥对</li>
+<li>分发公钥到各节点</li>
+<li>配置SSH客户端</li>
+</ol>
+<p>SSH配置文件 (<code>~/.ssh/config</code>):</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>StrictHostKeyChecking no
+UserKnownHostsFile /dev/null
+</code></pre><h2><img src="image/cluster-deployment-guide/1764661119993.png" alt="1764661119993"></h2>
+<h2 id="3-zookeeper集群部署">3. ZooKeeper集群部署 </h2>
+<h3 id="31-zookeeper配置">3.1 ZooKeeper配置 </h3>
+<p>安装路径: <code>/usr/local/zookeeper</code></p>
+<h4 id="311-核心配置文件-zoocfg">3.1.1 核心配置文件 (zoo.cfg) </h4>
+<pre data-role="codeBlock" data-info="properties" class="language-properties properties"><code><span class="token key attr-name">tickTime</span><span class="token punctuation">=</span><span class="token value attr-value">2000</span>
+<span class="token key attr-name">initLimit</span><span class="token punctuation">=</span><span class="token value attr-value">10</span>
+<span class="token key attr-name">syncLimit</span><span class="token punctuation">=</span><span class="token value attr-value">5</span>
+<span class="token key attr-name">dataDir</span><span class="token punctuation">=</span><span class="token value attr-value">/data/zookeeper/data</span>
+<span class="token key attr-name">dataLogDir</span><span class="token punctuation">=</span><span class="token value attr-value">/data/zookeeper/logs</span>
+<span class="token key attr-name">clientPort</span><span class="token punctuation">=</span><span class="token value attr-value">2181</span>
+<span class="token key attr-name">server.1</span><span class="token punctuation">=</span><span class="token value attr-value">hadoop1:2888:3888</span>
+<span class="token key attr-name">server.2</span><span class="token punctuation">=</span><span class="token value attr-value">hadoop2:2888:3888</span>
+<span class="token key attr-name">server.3</span><span class="token punctuation">=</span><span class="token value attr-value">hadoop3:2888:3888</span>
+</code></pre><h4 id="312-配置参数说明">3.1.2 配置参数说明 </h4>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tickTime</td>
+<td>2000</td>
+<td>心跳时间间隔(毫秒)</td>
+</tr>
+<tr>
+<td>initLimit</td>
+<td>10</td>
+<td>初始化连接超时(tickTime倍数)</td>
+</tr>
+<tr>
+<td>syncLimit</td>
+<td>5</td>
+<td>同步超时(tickTime倍数)</td>
+</tr>
+<tr>
+<td>dataDir</td>
+<td>/data/zookeeper/data</td>
+<td>数据存储目录</td>
+</tr>
+<tr>
+<td>clientPort</td>
+<td>2181</td>
+<td>客户端连接端口</td>
+</tr>
+</tbody>
+</table>
+<h4 id="313-myid配置">3.1.3 myid配置 </h4>
+<p>各节点myid文件内容:</p>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>myid内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hadoop1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>hadoop2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>hadoop3</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-zookeeper集群验证">3.2 ZooKeeper集群验证 </h3>
+<h4 id="321-服务状态检查">3.2.1 服务状态检查 </h4>
+<p>在各节点执行 <code>zkServer.sh status</code></p>
+<ul>
+<li>一个节点显示 <code>Mode: leader</code></li>
+<li>两个节点显示 <code>Mode: follower</code></li>
+</ul>
+<p><img src="image/cluster-deployment-guide/1764661294994.png" alt="1764661294994"></p>
+<h4 id="322-集群选举验证">3.2.2 集群选举验证 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 连接ZooKeeper客户端</span>
+zkCli.sh <span class="token parameter variable">-server</span> hadoop1:2181
+
+<span class="token comment"># 执行命令</span>
+<span class="token function">ls</span> /
+create /test <span class="token string">"hello"</span>
+get /test
+delete /test
+</code></pre><h2><img src="image/cluster-deployment-guide/1764661445832.png" alt="1764661445832"></h2>
+<h2 id="4-hadoop集群部署">4. Hadoop集群部署 </h2>
+<h3 id="41-hdfs配置">4.1 HDFS配置 </h3>
+<p>安装路径: <code>/usr/local/hadoop</code></p>
+<h4 id="411-core-sitexml-配置">4.1.1 core-site.xml 配置 </h4>
+<pre data-role="codeBlock" data-info="xml" class="language-xml xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>fs.defaultFS<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>hdfs://hadoop1:9000<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>hadoop.tmp.dir<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>/data/hadoop/tmp<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">&gt;</span></span>
+</code></pre><h4 id="412-hdfs-sitexml-配置">4.1.2 hdfs-site.xml 配置 </h4>
+<pre data-role="codeBlock" data-info="xml" class="language-xml xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>dfs.replication<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>dfs.namenode.name.dir<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>/data/hadoop/name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>dfs.datanode.data.dir<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>/data/hadoop/data<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>dfs.webhdfs.enabled<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>true<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">&gt;</span></span>
+</code></pre><h4 id="413-workers-配置">4.1.3 workers 配置 </h4>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>hadoop1
+hadoop2
+hadoop3
+</code></pre><h3 id="42-yarn配置">4.2 YARN配置 </h3>
+<h4 id="421-yarn-sitexml-配置">4.2.1 yarn-site.xml 配置 </h4>
+<pre data-role="codeBlock" data-info="xml" class="language-xml xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>yarn.resourcemanager.hostname<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>hadoop1<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>yarn.nodemanager.aux-services<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>mapreduce_shuffle<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>yarn.nodemanager.resource.memory-mb<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>4096<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">&gt;</span></span>
+</code></pre><h4 id="422-mapred-sitexml-配置">4.2.2 mapred-site.xml 配置 </h4>
+<pre data-role="codeBlock" data-info="xml" class="language-xml xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>mapreduce.framework.name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>yarn<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>mapreduce.jobhistory.address<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>hadoop1:10020<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">&gt;</span></span>
+</code></pre><h3 id="43-hadoop集群验证">4.3 Hadoop集群验证 </h3>
+<h4 id="431-hdfs状态检查">4.3.1 HDFS状态检查 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 查看HDFS报告</span>
+hdfs dfsadmin <span class="token parameter variable">-report</span>
+</code></pre><pre data-role="codeBlock" data-info="" class="language-text"><code>PS D:\Code\MyCode\HadoopHomework\scripts&gt; docker exec hadoop1 hdfs dfsadmin -report                              
+WARNING: log4j.properties is not found. HADOOP_CONF_DIR may be incomplete.
+Configured Capacity: 3243303530496 (2.95 TB)
+Present Capacity: 3015451485672 (2.74 TB)
+DFS Remaining: 3015443133096 (2.74 TB)
+DFS Used: 8352576 (7.97 MB)
+DFS Used%: 0.00%
+Replicated Blocks:
+        Under replicated blocks: 0
+        Blocks with corrupt replicas: 0
+        Missing blocks: 0
+        Missing blocks (with replication factor 1): 0
+        Low redundancy blocks with highest priority to recover: 0
+        Pending deletion blocks: 0
+Erasure Coded Block Groups: 
+        Low redundancy block groups: 0
+        Block groups with corrupt internal blocks: 0
+        Missing block groups: 0
+        Low redundancy blocks with highest priority to recover: 0
+        Pending deletion blocks: 0
+
+-------------------------------------------------
+Live datanodes (3):
+
+Name: 172.18.0.2:9866 (hadoop1)
+Hostname: hadoop1
+Decommission Status : Normal
+Configured Capacity: 1081101176832 (1006.85 GB)
+DFS Used: 4038968 (3.85 MB)
+Non DFS Used: 20241243848 (18.85 GB)
+DFS Remaining: 1004789797204 (935.78 GB)
+DFS Used%: 0.00%
+DFS Remaining%: 92.94%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 8
+Last contact: Tue Dec 02 07:46:24 GMT 2025
+Last Block Report: Mon Dec 01 10:27:50 GMT 2025
+Num of Blocks: 257
+
+
+Name: 172.18.0.3:9866 (hadoop2)
+Hostname: hadoop2
+Decommission Status : Normal
+Configured Capacity: 1081101176832 (1006.85 GB)
+DFS Used: 2564408 (2.45 MB)
+Non DFS Used: 20242718408 (18.85 GB)
+DFS Remaining: 1005326667946 (936.28 GB)
+DFS Used%: 0.00%
+DFS Remaining%: 92.99%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 4
+Last contact: Tue Dec 02 07:46:24 GMT 2025
+Last Block Report: Mon Dec 01 08:30:02 GMT 2025
+Num of Blocks: 147
+
+
+Name: 172.18.0.4:9866 (hadoop3)
+Hostname: hadoop3
+Decommission Status : Normal
+Configured Capacity: 1081101176832 (1006.85 GB)
+DFS Used: 1749200 (1.67 MB)
+Non DFS Used: 20243533616 (18.85 GB)
+DFS Remaining: 1005326667946 (936.28 GB)
+DFS Used%: 0.00%
+DFS Remaining%: 92.99%
+Configured Cache Capacity: 0 (0 B)
+Cache Used: 0 (0 B)
+Cache Remaining: 0 (0 B)
+Cache Used%: 100.00%
+Cache Remaining%: 0.00%
+Xceivers: 4
+Last contact: Tue Dec 02 07:46:24 GMT 2025
+Last Block Report: Mon Dec 01 10:23:38 GMT 2025
+Num of Blocks: 122
+</code></pre><h4 id="432-hdfs-web-ui">4.3.2 HDFS Web UI </h4>
+<p>访问地址: <a href="http://localhost:9870">http://localhost:9870</a></p>
+<p><img src="image/cluster-deployment-guide/1764661678310.png" alt="1764661678310"></p>
+<p>HDFS DataNodes列表:</p>
+<p><img src="image/cluster-deployment-guide/1764661703754.png" alt="1764661703754"></p>
+<h4 id="433-yarn状态检查">4.3.3 YARN状态检查 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 查看节点列表</span>
+<span class="token function">yarn</span> <span class="token function">node</span> <span class="token parameter variable">-list</span>
+</code></pre><p><img src="image/cluster-deployment-guide/1764661760984.png" alt="1764661760984"></p>
+<h4 id="434-yarn-web-ui">4.3.4 YARN Web UI </h4>
+<p>访问地址: <a href="http://localhost:8088">http://localhost:8088</a></p>
+<p><img src="image/cluster-deployment-guide/1764661801927.png" alt="1764661801927"></p>
+<hr>
+<h2 id="5-hbase集群部署">5. HBase集群部署 </h2>
+<h3 id="51-hbase配置">5.1 HBase配置 </h3>
+<p>安装路径: <code>/usr/local/hbase</code></p>
+<h4 id="511-hbase-sitexml-配置">5.1.1 hbase-site.xml 配置 </h4>
+<pre data-role="codeBlock" data-info="xml" class="language-xml xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>hbase.cluster.distributed<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>true<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>hbase.rootdir<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>hdfs://hadoop1:9000/hbase<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>hbase.zookeeper.quorum<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>hadoop1,hadoop2,hadoop3<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">&gt;</span></span>
+</code></pre><h4 id="512-regionservers-配置">5.1.2 regionservers 配置 </h4>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>hadoop2
+hadoop3
+</code></pre><h4 id="513-hbase-envsh-配置">5.1.3 <a href="http://hbase-env.sh">hbase-env.sh</a> 配置 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token builtin class-name">export</span> <span class="token assign-left variable">JAVA_HOME</span><span class="token operator">=</span>/usr/lib/jvm/java-8-openjdk-amd64
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">HBASE_MANAGES_ZK</span><span class="token operator">=</span>false
+</code></pre><h3 id="52-hbase集群验证">5.2 HBase集群验证 </h3>
+<h4 id="521-hbase进程检查">5.2.1 HBase进程检查 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 在各节点执行jps</span>
+jps
+</code></pre><p><img src="image/cluster-deployment-guide/1764661868296.png" alt="1764661868296"></p>
+<p><img src="image/cluster-deployment-guide/1764661887883.png" alt="1764661887883"></p>
+<h4 id="522-hbase-web-ui">5.2.2 HBase Web UI </h4>
+<p>访问地址: <a href="http://localhost:16010">http://localhost:16010</a></p>
+<p><img src="image/cluster-deployment-guide/1764661921567.png" alt="1764661921567"></p>
+<h2 id="6-hive数据仓库部署">6. Hive数据仓库部署 </h2>
+<h3 id="61-hive配置">6.1 Hive配置 </h3>
+<p>安装路径: <code>/usr/local/hive</code></p>
+<h4 id="611-hive-sitexml-配置">6.1.1 hive-site.xml 配置 </h4>
+<pre data-role="codeBlock" data-info="xml" class="language-xml xml"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>javax.jdo.option.ConnectionURL<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>jdbc:mysql://mysql:3306/hive_metastore?createDatabaseIfNotExist=true<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>javax.jdo.option.ConnectionDriverName<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>com.mysql.cj.jdbc.Driver<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>javax.jdo.option.ConnectionUserName<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>hive<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>javax.jdo.option.ConnectionPassword<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>hive123<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">&gt;</span></span>hive.metastore.warehouse.dir<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>value</span><span class="token punctuation">&gt;</span></span>/user/hive/warehouse<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>value</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">&gt;</span></span>
+</code></pre><h3 id="62-mysql元数据库配置">6.2 MySQL元数据库配置 </h3>
+<h4 id="621-数据库信息">6.2.1 数据库信息 </h4>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据库主机</td>
+<td>mysql (172.18.0.10)</td>
+</tr>
+<tr>
+<td>数据库端口</td>
+<td>3306</td>
+</tr>
+<tr>
+<td>数据库名称</td>
+<td>hive_metastore</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>hive</td>
+</tr>
+<tr>
+<td>密码</td>
+<td>hive123</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-hive功能验证">6.3 Hive功能验证 </h3>
+<h4 id="631-hiveserver2服务检查">6.3.1 HiveServer2服务检查 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 检查HiveServer2进程</span>
+jps <span class="token operator">|</span> <span class="token function">grep</span> RunJar
+
+<span class="token comment"># 检查端口监听</span>
+<span class="token function">netstat</span> <span class="token parameter variable">-tlnp</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token number">10000</span>
+</code></pre><p><img src="image/cluster-deployment-guide/1764662025218.png" alt="1764662025218"></p>
+<h4 id="632-hive-cli操作验证">6.3.2 Hive CLI操作验证 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 进入Hive CLI</span>
+hive
+</code></pre><p>所有数据库：<br>
+<img src="image/cluster-deployment-guide/1764662155255.png" alt="1764662155255"></p>
+<p>所有表格：<br>
+<img src="image/cluster-deployment-guide/1764662309361.png" alt="1764662309361"></p>
+<p>执行hive结果：<br>
+<img src="image/cluster-deployment-guide/1764662351948.png" alt="1764662351948"></p>
+<h4 id="633-beeline连接测试">6.3.3 Beeline连接测试 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>beeline <span class="token parameter variable">-u</span> jdbc:hive2://localhost:10000 <span class="token parameter variable">-n</span> root
+</code></pre><h2><img src="image/cluster-deployment-guide/1764662390937.png" alt="1764662390937"></h2>
+<h2 id="7-集群功能验证">7. 集群功能验证 </h2>
+<h3 id="71-跨组件数据流转测试">7.1 跨组件数据流转测试 </h3>
+<p>本节验证数据在各组件间的流转: HDFS -&gt; MapReduce -&gt; Hive</p>
+<h4 id="711-测试数据准备">7.1.1 测试数据准备 </h4>
+<p>测试数据文件: <code>user_behavior.log</code></p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>1001,P001,click,5,2024-12-01 10:00:01
+1001,P001,browse,120,2024-12-01 10:00:10
+1002,P002,click,3,2024-12-01 10:05:00
+...
+</code></pre><h4 id="712-数据上传到hdfs">7.1.2 数据上传到HDFS </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>hdfs dfs <span class="token parameter variable">-mkdir</span> <span class="token parameter variable">-p</span> /user/hadoop/raw_logs
+hdfs dfs <span class="token parameter variable">-put</span> user_behavior.log /user/hadoop/raw_logs/
+hdfs dfs <span class="token parameter variable">-ls</span> /user/hadoop/raw_logs/
+</code></pre><p><img src="image/cluster-deployment-guide/1764662519713.png" alt="1764662519713"></p>
+<h4 id="713-mapreduce数据处理">7.1.3 MapReduce数据处理 </h4>
+<h5 id="a-运行数据清洗任务">a. 运行数据清洗任务 </h5>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>hadoop jar /opt/mapreduce/target/ecommerce-analysis-1.0-SNAPSHOT.jar <span class="token punctuation">\</span>
+    com.ecommerce.clean.LogCleanDriver <span class="token punctuation">\</span>
+    /user/hadoop/raw_logs <span class="token punctuation">\</span>
+    /user/hadoop/cleaned_data
+</code></pre><p><img src="image/cluster-deployment-guide/1764663008230.png" alt="1764663008230"></p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>root@hadoop1:~# hadoop jar /opt/mapreduce/target/ecommerce-analysis-1.0-SNAPSHOT.jar \
+    com.ecommerce.clean.LogCleanDriver \
+    /user/hadoop/raw_logs \
+    /user/hadoop/cleaned_data
+WARNING: log4j.properties is not found. HADOOP_CONF_DIR may be incomplete.
+Output directory exists, deleting: /user/hadoop/cleaned_data
+2025-12-02 08:08:57,210 INFO  [main] client.DefaultNoHARMFailoverProxyProvider (DefaultNoHARMFailoverProxyProvider.java:init(64)) - Connecting to ResourceManager at hadoop1/172.18.0.2:8032
+2025-12-02 08:08:57,546 INFO  [main] mapreduce.JobResourceUploader (JobResourceUploader.java:disableErasureCodingForPath(907)) - Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/root/.staging/job_1764577810697_0005 
+2025-12-02 08:08:57,849 INFO  [main] input.FileInputFormat (FileInputFormat.java:listStatus(300)) - Total input files to process : 1
+2025-12-02 08:08:57,922 INFO  [main] mapreduce.JobSubmitter (JobSubmitter.java:submitJobInternal(202)) - number of splits:1
+2025-12-02 08:08:58,046 INFO  [main] mapreduce.JobSubmitter (JobSubmitter.java:printTokens(298)) - Submitting tokens for job: job_1764577810697_0005
+2025-12-02 08:08:58,046 INFO  [main] mapreduce.JobSubmitter (JobSubmitter.java:printTokens(299)) - Executing with tokens: []
+2025-12-02 08:08:58,216 INFO  [main] conf.Configuration (Configuration.java:getConfResourceAsInputStream(2854)) - resource-types.xml not found
+2025-12-02 08:08:58,216 INFO  [main] resource.ResourceUtils (ResourceUtils.java:addResourcesFileToConf(476)) - Unable to find 'resource-types.xml'.
+2025-12-02 08:08:58,294 INFO  [main] impl.YarnClientImpl (YarnClientImpl.java:submitApplication(338)) - Submitted application application_1764577810697_0005
+2025-12-02 08:08:58,330 INFO  [main] mapreduce.Job (Job.java:submit(1682)) - The url to track the job: http://hadoop1:8088/proxy/application_1764577810697_0005/
+2025-12-02 08:08:58,331 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1727)) - Running job: job_1764577810697_0005
+2025-12-02 08:09:04,422 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1748)) - Job job_1764577810697_0005 running in uber mode : false
+2025-12-02 08:09:04,424 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1755)) -  map 0% reduce 0%
+2025-12-02 08:09:09,479 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1755)) -  map 100% reduce 0%
+2025-12-02 08:09:09,488 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1766)) - Job job_1764577810697_0005 completed successfully
+2025-12-02 08:09:09,584 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1773)) - Counters: 34
+        File System Counters
+                FILE: Number of bytes read=0
+                FILE: Number of bytes written=277171
+                FILE: Number of read operations=0
+                FILE: Number of large read operations=0
+                FILE: Number of write operations=0
+                HDFS: Number of bytes read=1549
+                HDFS: Number of bytes written=1238
+                HDFS: Number of read operations=7
+                HDFS: Number of large read operations=0
+                HDFS: Number of write operations=2
+                HDFS: Number of bytes read erasure-coded=0
+        Job Counters
+                Launched map tasks=1
+                Data-local map tasks=1
+                Total time spent by all maps in occupied slots (ms)=5012
+                Total time spent by all reduces in occupied slots (ms)=0
+                Total time spent by all map tasks (ms)=2506
+                Total vcore-milliseconds taken by all map tasks=2506
+                Total megabyte-milliseconds taken by all map tasks=2566144
+        Map-Reduce Framework
+                Map input records=35
+                Map output records=32
+                Input split bytes=123
+                Input split bytes=123
+                Spilled Records=0
+                Failed Shuffles=0
+                Merged Map outputs=0
+                GC time elapsed (ms)=30
+                CPU time spent (ms)=320
+                Physical memory (bytes) snapshot=212844544
+                Virtual memory (bytes) snapshot=2594578432
+                Total committed heap usage (bytes)=212860928
+                Peak Map Physical memory (bytes)=212844544
+                Peak Map Virtual memory (bytes)=2594578432
+        CleanStats
+                ValidRecords=32
+        File Input Format Counters
+                Bytes Read=1426
+        File Output Format Counters
+                Bytes Written=1238
+root@hadoop1:~#
+
+
+
+
+                Input split bytes=123
+                Spilled Records=0
+                Failed Shuffles=0
+                Merged Map outputs=0
+                GC time elapsed (ms)=30
+                CPU time spent (ms)=320
+                Physical memory (bytes) snapshot=212844544
+                Virtual memory (bytes) snapshot=2594578432
+                Total committed heap usage (bytes)=212860928
+                Peak Map Physical memory (bytes)=212844544
+                Peak Map Virtual memory (bytes)=2594578432
+        CleanStats
+                ValidRecords=32
+        File Input Format Counters
+                Bytes Read=1426
+        File Output Format Counters
+                Bytes Written=1238
+root@hadoop1:~#
+
+                Input split bytes=123
+                Spilled Records=0
+                Failed Shuffles=0
+                Merged Map outputs=0
+                GC time elapsed (ms)=30
+                CPU time spent (ms)=320
+                Physical memory (bytes) snapshot=212844544
+                Virtual memory (bytes) snapshot=2594578432
+                Total committed heap usage (bytes)=212860928
+                Peak Map Physical memory (bytes)=212844544
+                Peak Map Virtual memory (bytes)=2594578432
+        CleanStats
+                ValidRecords=32
+        File Input Format Counters
+                Input split bytes=123
+                Spilled Records=0
+                Failed Shuffles=0
+                Merged Map outputs=0
+                GC time elapsed (ms)=30
+                CPU time spent (ms)=320
+                Physical memory (bytes) snapshot=212844544
+                Virtual memory (bytes) snapshot=2594578432
+                Input split bytes=123
+                Spilled Records=0
+                Failed Shuffles=0
+                Merged Map outputs=0
+                GC time elapsed (ms)=30
+                CPU time spent (ms)=320
+                Input split bytes=123
+                Spilled Records=0
+                Failed Shuffles=0
+                Merged Map outputs=0
+                Spilled Records=0
+                Failed Shuffles=0
+                Merged Map outputs=0
+                GC time elapsed (ms)=30
+                Failed Shuffles=0
+                Merged Map outputs=0
+                GC time elapsed (ms)=30
+                Merged Map outputs=0
+                GC time elapsed (ms)=30
+                GC time elapsed (ms)=30
+                CPU time spent (ms)=320
+                Physical memory (bytes) snapshot=212844544
+                Virtual memory (bytes) snapshot=2594578432
+                Total committed heap usage (bytes)=212860928
+                Peak Map Physical memory (bytes)=212844544
+                Peak Map Virtual memory (bytes)=2594578432
+        CleanStats
+                ValidRecords=32
+        File Input Format Counters
+                Bytes Read=1426
+        File Output Format Counters
+                Bytes Written=1238
+</code></pre><h5 id="b-运行统计任务">b. 运行统计任务 </h5>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code>hadoop jar /opt/mapreduce/target/ecommerce-analysis-1.0-SNAPSHOT.jar <span class="token punctuation">\</span>
+    com.ecommerce.stats.ProductClickCount <span class="token punctuation">\</span>
+    /user/hadoop/cleaned_data <span class="token punctuation">\</span>
+    /user/hadoop/output/product_clicks
+</code></pre><p><img src="image/cluster-deployment-guide/1764663134778.png" alt="1764663134778"></p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>root@hadoop1:~# hadoop jar /opt/mapreduce/target/ecommerce-analysis-1.0-SNAPSHOT.jar \
+    com.ecommerce.stats.ProductClickCount \
+    /user/hadoop/cleaned_data \
+    /user/hadoop/output/product_clicks
+WARNING: log4j.properties is not found. HADOOP_CONF_DIR may be incomplete.
+Output directory exists, deleting: /user/hadoop/output/product_clicks
+2025-12-02 08:11:02,066 INFO  [main] client.DefaultNoHARMFailoverProxyProvider (DefaultNoHARMFailoverProxyProvider.java:init(64)) - Connecting to ResourceManager at hadoop1/172.18.0.2:8032
+2025-12-02 08:11:02,339 INFO  [main] mapreduce.JobResourceUploader (JobResourceUploader.java:disableErasureCodingForPath(907)) - Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/root/.staging/job_1764577810697_0006
+2025-12-02 08:11:02,632 INFO  [main] input.FileInputFormat (FileInputFormat.java:listStatus(300)) - Total input files to process : 1
+2025-12-02 08:11:02,699 INFO  [main] mapreduce.JobSubmitter (JobSubmitter.java:submitJobInternal(202)) - number of splits:1
+2025-12-02 08:11:02,788 INFO  [main] mapreduce.JobSubmitter (JobSubmitter.java:printTokens(298)) - Submitting tokens for job: job_1764577810697_0006
+2025-12-02 08:11:02,788 INFO  [main] mapreduce.JobSubmitter (JobSubmitter.java:printTokens(299)) - Executing with tokens: []
+2025-12-02 08:11:02,951 INFO  [main] conf.Configuration (Configuration.java:getConfResourceAsInputStream(2854)) - resource-types.xml not found
+2025-12-02 08:11:02,951 INFO  [main] resource.ResourceUtils (ResourceUtils.java:addResourcesFileToConf(476)) - Unable to find 'resource-types.xml'.
+2025-12-02 08:11:03,014 INFO  [main] impl.YarnClientImpl (YarnClientImpl.java:submitApplication(338)) - Submitted application application_1764577810697_0006
+2025-12-02 08:11:03,050 INFO  [main] mapreduce.Job (Job.java:submit(1682)) - The url to track the job: http://hadoop1:8088/proxy/application_1764577810697_0006/
+2025-12-02 08:11:03,051 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1727)) - Running job: job_1764577810697_0006
+2025-12-02 08:11:09,132 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1748)) - Job job_1764577810697_0006 running in uber mode : false
+2025-12-02 08:11:09,133 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1755)) -  map 0% reduce 0%
+2025-12-02 08:11:14,191 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1755)) -  map 100% reduce 0%
+2025-12-02 08:11:19,216 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1755)) -  map 100% reduce 100%
+2025-12-02 08:11:19,223 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1766)) - Job job_1764577810697_0006 completed successfully
+2025-12-02 08:11:19,325 INFO  [main] mapreduce.Job (Job.java:monitorAndPrintJob(1773)) - Counters: 54
+        File System Counters
+                FILE: Number of bytes read=61
+                FILE: Number of bytes written=555663
+                FILE: Number of read operations=0
+                FILE: Number of large read operations=0
+                FILE: Number of write operations=0
+                HDFS: Number of bytes read=1360
+                HDFS: Number of bytes written=35
+                HDFS: Number of read operations=8
+                HDFS: Number of large read operations=0
+                HDFS: Number of write operations=2
+                HDFS: Number of bytes read erasure-coded=0
+        Job Counters
+                Launched map tasks=1
+                Launched reduce tasks=1
+                Data-local map tasks=1
+                Total time spent by all maps in occupied slots (ms)=4854
+                Total time spent by all reduces in occupied slots (ms)=5408
+                Total time spent by all map tasks (ms)=2427
+                Total time spent by all reduce tasks (ms)=2704
+                Total vcore-milliseconds taken by all map tasks=2427
+                Total vcore-milliseconds taken by all reduce tasks=2704
+                Total megabyte-milliseconds taken by all map tasks=2485248
+                Total megabyte-milliseconds taken by all reduce tasks=2768896
+        Map-Reduce Framework
+                Map input records=32
+                Map output records=13
+                Map output bytes=117
+                Map output materialized bytes=61
+                Input split bytes=122
+                Combine input records=13
+                Combine output records=5
+                Reduce input groups=5
+                Reduce shuffle bytes=61
+                Reduce input records=5
+                Reduce output records=5
+                Spilled Records=10
+                Shuffled Maps =1
+                Failed Shuffles=0
+                Merged Map outputs=1
+                GC time elapsed (ms)=65
+                CPU time spent (ms)=800
+                Physical memory (bytes) snapshot=546078720
+                Virtual memory (bytes) snapshot=5187530752
+                Total committed heap usage (bytes)=531103744
+                Peak Map Physical memory (bytes)=318783488
+                Peak Map Virtual memory (bytes)=2589093888
+                Peak Reduce Physical memory (bytes)=227295232
+                Peak Reduce Virtual memory (bytes)=2598436864
+        Shuffle Errors
+                BAD_ID=0
+                CONNECTION=0
+                IO_ERROR=0
+                WRONG_LENGTH=0
+                WRONG_MAP=0
+                WRONG_REDUCE=0
+        File Input Format Counters
+                Bytes Read=1238
+        File Output Format Counters
+                Bytes Written=35
+</code></pre><h5 id="c-yarn-截图">c. yarn 截图 </h5>
+<p><img src="image/cluster-deployment-guide/1764663221455.png" alt="1764663221455"></p>
+<h4 id="714-hive数据分析">7.1.4 Hive数据分析 </h4>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-USE">USE</span> ecommerce<span class="token punctuation">;</span>
+
+<span class="token keyword keyword-CREATE">CREATE</span> EXTERNAL <span class="token keyword keyword-TABLE">TABLE</span> <span class="token keyword keyword-IF">IF</span> <span class="token operator">NOT</span> <span class="token keyword keyword-EXISTS">EXISTS</span> product_clicks <span class="token punctuation">(</span>
+    product_id STRING<span class="token punctuation">,</span>
+    click_count <span class="token keyword keyword-INT">INT</span>
+<span class="token punctuation">)</span>
+<span class="token keyword keyword-ROW">ROW</span> FORMAT DELIMITED
+<span class="token keyword keyword-FIELDS">FIELDS</span> <span class="token keyword keyword-TERMINATED">TERMINATED</span> <span class="token keyword keyword-BY">BY</span> <span class="token string">'\t'</span>
+LOCATION <span class="token string">'/user/hadoop/output/product_clicks'</span><span class="token punctuation">;</span>
+
+<span class="token keyword keyword-SHOW">SHOW</span> <span class="token keyword keyword-TABLES">TABLES</span><span class="token punctuation">;</span>
+
+<span class="token keyword keyword-SELECT">SELECT</span> <span class="token operator">*</span> <span class="token keyword keyword-FROM">FROM</span> product_clicks<span class="token punctuation">;</span>
+</code></pre><p><img src="image/cluster-deployment-guide/1764663698520.png" alt="1764663698520"></p>
+<p><img src="image/cluster-deployment-guide/1764663800372.png" alt="1764663800372"></p>
+<h3 id="72-数据流转验证结果">7.2 数据流转验证结果 </h3>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>输入</th>
+<th>输出</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据上传</td>
+<td>本地文件</td>
+<td>HDFS /user/hadoop/raw_logs</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>数据清洗</td>
+<td>原始日志</td>
+<td>HDFS /user/hadoop/cleaned_data</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>指标统计</td>
+<td>清洗数据</td>
+<td>HDFS /user/hadoop/output/product_clicks</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>Hive分析</td>
+<td>HDFS数据</td>
+<td>SQL查询结果</td>
+<td>成功</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-运维监控">8. 运维监控 </h2>
+<h3 id="81-监控指标体系">8.1 监控指标体系 </h3>
+<h4 id="811-hdfs监控指标">8.1.1 HDFS监控指标 </h4>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>检查命令</th>
+<th>正常范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DataNode存活数</td>
+<td><code>hdfs dfsadmin -report</code></td>
+<td>等于配置节点数</td>
+</tr>
+<tr>
+<td>磁盘使用率</td>
+<td><code>hdfs dfs -df -h</code></td>
+<td>&lt; 80%</td>
+</tr>
+<tr>
+<td>副本缺失数</td>
+<td><code>hdfs fsck / -files</code></td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<h4 id="812-yarn监控指标">8.1.2 YARN监控指标 </h4>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>检查命令</th>
+<th>正常范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NodeManager存活数</td>
+<td><code>yarn node -list</code></td>
+<td>等于配置节点数</td>
+</tr>
+<tr>
+<td>可用内存</td>
+<td>Web UI</td>
+<td>&gt; 20%</td>
+</tr>
+<tr>
+<td>任务队列</td>
+<td><code>yarn application -list</code></td>
+<td>无长时间PENDING</td>
+</tr>
+</tbody>
+</table>
+<h4 id="813-zookeeper监控指标">8.1.3 ZooKeeper监控指标 </h4>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>检查命令</th>
+<th>正常值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>集群状态</td>
+<td><code>zkServer.sh status</code></td>
+<td>1 leader + 2 followers</td>
+</tr>
+<tr>
+<td>连接数</td>
+<td><code>echo stat | nc localhost 2181</code></td>
+<td>&lt; maxClientCnxns</td>
+</tr>
+</tbody>
+</table>
+<h3 id="82-日志分析">8.2 日志分析 </h3>
+<h4 id="821-日志文件位置">8.2.1 日志文件位置 </h4>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>日志路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hadoop</td>
+<td>$HADOOP_HOME/logs/</td>
+</tr>
+<tr>
+<td>ZooKeeper</td>
+<td>/data/zookeeper/logs/</td>
+</tr>
+<tr>
+<td>HBase</td>
+<td>$HBASE_HOME/logs/</td>
+</tr>
+<tr>
+<td>Hive</td>
+<td>/data/hadoop/logs/hiveserver2.log</td>
+</tr>
+</tbody>
+</table>
+<h4 id="822-常用日志分析命令">8.2.2 常用日志分析命令 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 查看最近错误</span>
+<span class="token function">grep</span> <span class="token parameter variable">-i</span> error <span class="token variable">$HADOOP_HOME</span>/logs/*.log <span class="token operator">|</span> <span class="token function">tail</span> <span class="token parameter variable">-20</span>
+
+<span class="token comment"># 查看NameNode日志</span>
+<span class="token function">tail</span> <span class="token parameter variable">-100</span> <span class="token variable">$HADOOP_HOME</span>/logs/hadoop-root-namenode-*.log
+
+<span class="token comment"># 查看HBase Master日志</span>
+<span class="token function">tail</span> <span class="token parameter variable">-100</span> <span class="token variable">$HBASE_HOME</span>/logs/hbase-root-master-*.log
+</code></pre><h3 id="83-健康检查脚本">8.3 健康检查脚本 </h3>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token shebang important">#!/bin/bash</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"=== 集群健康检查 ==="</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"[HDFS] DataNode数量:"</span>
+hdfs dfsadmin <span class="token parameter variable">-report</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"Live datanodes"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"[YARN] NodeManager数量:"</span>
+<span class="token function">yarn</span> <span class="token function">node</span> <span class="token parameter variable">-list</span> <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span>/dev/null <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"Total Nodes"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"[ZooKeeper] 集群状态:"</span>
+zkServer.sh status <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span><span class="token file-descriptor important">&amp;1</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"Mode"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"[HBase] RegionServer数量:"</span>
+<span class="token builtin class-name">echo</span> <span class="token string">"status"</span> <span class="token operator">|</span> hbase shell <span class="token parameter variable">-n</span> <span class="token operator"><span class="token file-descriptor important">2</span>&gt;</span>/dev/null <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">"servers"</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"[Hive] HiveServer2状态:"</span>
+jps <span class="token operator">|</span> <span class="token function">grep</span> <span class="token parameter variable">-c</span> <span class="token string">"RunJar"</span>
+</code></pre><p><img src="image/cluster-deployment-guide/1764663960600.png" alt="1764663960600"></p>
+<hr>
+<h2 id="9-故障处理与恢复">9. 故障处理与恢复 </h2>
+<p>本章模拟各组件常见故障场景，演示诊断方法和恢复操作。</p>
+<h3 id="91-datanode故障模拟与恢复">9.1 DataNode故障模拟与恢复 </h3>
+<h4 id="911-故障模拟">9.1.1 故障模拟 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 在hadoop2上停止DataNode服务</span>
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> hadoop2 <span class="token function">bash</span> <span class="token parameter variable">-c</span> <span class="token string">"jps | grep DataNode | awk '{print \<span class="token variable">$1</span>}' | xargs kill -9"</span>
+</code></pre><p><img src="image/cluster-deployment-guide/1764664644641.png" alt="1764664644641"></p>
+<h4 id="912-故障现象">9.1.2 故障现象 </h4>
+<p>等待一段时间之后，Live datanodes数量减少<br>
+<img src="image/cluster-deployment-guide/1764665483870.png" alt="1764665483870"></p>
+<h4 id="913-故障恢复">9.1.3 故障恢复 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 重新启动DataNode</span>
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> hadoop2 hdfs <span class="token parameter variable">--daemon</span> start datanode
+</code></pre><h2><img src="image/cluster-deployment-guide/1764665659006.png" alt="1764665659006"></h2>
+<h3 id="92-zookeeper节点故障">9.2 ZooKeeper节点故障 </h3>
+<h4 id="921-故障模拟">9.2.1 故障模拟 </h4>
+<p>停止Leader节点的ZooKeeper</p>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token function">docker</span> <span class="token builtin class-name">exec</span> hadoop3 zkServer.sh stop
+</code></pre><h4 id="922-故障现象">9.2.2 故障现象 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 检查各节点ZooKeeper状态</span>
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> hadoop1 zkServer.sh status
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> hadoop2 zkServer.sh status
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> hadoop3 zkServer.sh status
+</code></pre><p>hadoop3显示未运行，其他两个节点会重新选举Leader</p>
+<p><img src="image/cluster-deployment-guide/1764665729102.png" alt="1764665729102"></p>
+<h4 id="923-故障恢复">9.2.3 故障恢复 </h4>
+<pre data-role="codeBlock" data-info="bash" class="language-bash bash"><code><span class="token comment"># 重新启动ZooKeeper</span>
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> hadoop3 zkServer.sh start
+
+<span class="token comment"># 验证恢复</span>
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> hadoop1 zkServer.sh status
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> hadoop2 zkServer.sh status
+<span class="token function">docker</span> <span class="token builtin class-name">exec</span> hadoop3 zkServer.sh status
+</code></pre><p>三个节点正常运行（1 Leader + 2 Followers）只不过Leader变更为hadoop2</p>
+<p><img src="image/cluster-deployment-guide/1764665782295.png" alt="1764665782295"></p>
+<hr>
+
+      </div>
+      
+      
+    
+    
+    <script type="module">
+// TODO: If ZenUML gets integrated into mermaid in the future,
+//      we can remove the following lines.
+
+
+var MERMAID_CONFIG = ({"startOnLoad":false});
+if (typeof MERMAID_CONFIG !== 'undefined') {
+  MERMAID_CONFIG.startOnLoad = false
+  MERMAID_CONFIG.cloneCssStyles = false
+  MERMAID_CONFIG.theme = "default"
+}
+
+mermaid.initialize(MERMAID_CONFIG || {})
+if (typeof(window['Reveal']) !== 'undefined') {
+  function mermaidRevealHelper(event) {
+    var currentSlide = event.currentSlide
+    var diagrams = currentSlide.querySelectorAll('.mermaid')
+    for (var i = 0; i < diagrams.length; i++) {
+      var diagram = diagrams[i]
+      if (!diagram.hasAttribute('data-processed')) {
+        mermaid.init(null, diagram, ()=> {
+          Reveal.slide(event.indexh, event.indexv)
+        })
+      }
+    }
+  }
+  Reveal.addEventListener('slidetransitionend', mermaidRevealHelper)
+  Reveal.addEventListener('ready', mermaidRevealHelper)
+  await mermaid.run({
+    nodes: document.querySelectorAll('.mermaid')
+  })
+} else {
+  await mermaid.run({
+    nodes: document.querySelectorAll('.mermaid')
+  })
+}
+</script>
+    
+    
+    
+  
+    </body></html>

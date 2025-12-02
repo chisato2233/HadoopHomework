@@ -2,6 +2,7 @@ package com.ecommerce.stats;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -87,6 +88,15 @@ public class ProductClickCount extends Configured implements Tool {
         }
 
         Configuration conf = getConf();
+
+        // 如果输出目录已存在，自动删除
+        Path outputDir = new Path(outputPath);
+        FileSystem fs = outputDir.getFileSystem(conf);
+        if (fs.exists(outputDir)) {
+            System.out.println("Output directory exists, deleting: " + outputPath);
+            fs.delete(outputDir, true);
+        }
+
         Job job = Job.getInstance(conf, "Product Click Count");
 
         job.setJarByClass(ProductClickCount.class);
@@ -98,7 +108,7 @@ public class ProductClickCount extends Configured implements Tool {
         job.setOutputValueClass(IntWritable.class);
 
         FileInputFormat.addInputPath(job, new Path(inputPath));
-        FileOutputFormat.setOutputPath(job, new Path(outputPath));
+        FileOutputFormat.setOutputPath(job, outputDir);
 
         return job.waitForCompletion(true) ? 0 : 1;
     }

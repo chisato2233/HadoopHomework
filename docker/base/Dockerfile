@@ -36,6 +36,7 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && 
         openssh-client \
         vim \
         net-tools \
+        iputils-ping \
         wget \
         curl \
         netcat \
